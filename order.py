@@ -32,3 +32,13 @@ for i in range(5):
             print("Jumlah harus berupa angka positif.")
     else:
         print("Item tidak ditemukan dalam menu.")
+
+        print("\nIsi keranjang belanja Anda:")
+total_belanja = 0
+for entri in keranjang:
+    item = entri["item"]
+    jumlah = entri["jumlah"]
+    catatan = entri["catatan"]
+    harga = menu_item[item]["harga"]
+    total_belanja += harga * jumlah
+    print(f"{item} (x{jumlah}) - Rp{harga * jumlah} | Catatan: '{catatan}'")
