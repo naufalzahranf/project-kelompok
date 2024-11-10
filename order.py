@@ -7,3 +7,8 @@ menu_item = {
 
 MINIMUM_BELANJA = 75000
 keranjang = []
+
+print("=== Selamat Datang di Restoran Markez ===")
+print("Daftar menu:")
+for item, info in menu_item.items():
+    print(f"- {item}: Rp{info['harga']}")
