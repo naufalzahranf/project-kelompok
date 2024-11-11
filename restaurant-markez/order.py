@@ -74,3 +74,20 @@ while True:
             break
     else:
         break
+
+if total_belanja < MINIMUM_BELANJA:
+    print(f"\nTotal belanja Anda Rp{total_belanja}. Minimal belanja adalah Rp{MINIMUM_BELANJA}.")
+    item_tambahan = input("Silakan tambahkan item lagi untuk memenuhi batas minimal (atau tekan Enter untuk selesai): ")
+    if item_tambahan:
+        if item_tambahan in menu_item:
+            jumlah_input = input(f"Masukkan jumlah {item_tambahan}: ")
+            if jumlah_input.isdigit() and int(jumlah_input) > 0:
+                jumlah = int(jumlah_input)
+                catatan = input(f"Tambahkan catatan khusus untuk {item_tambahan} (tekan Enter jika tidak ada): ")
+                keranjang.append({"item": item_tambahan, "jumlah": jumlah, "catatan": catatan})
+                print(f"{jumlah} {item_tambahan} ditambahkan ke keranjang dengan catatan: '{catatan}'.")
+                total_belanja += menu_item[item_tambahan]["harga"] * jumlah
+            else:
+                print("Jumlah harus berupa angka positif.")
+        else:
+            print("Item tidak ditemukan dalam menu.")
