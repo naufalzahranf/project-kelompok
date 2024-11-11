@@ -26,7 +26,7 @@ for i in range(5):
         else:
             print("Jumlah harus berupa angka positif.")
     else:
-        print("Item tidak ditemukan dalam menu.")
+        print("Item tidak ditemukan dalam menu.")
 
         print("\nIsi keranjang belanja Anda:")
 total_belanja = 0
@@ -91,3 +91,28 @@ if total_belanja < MINIMUM_BELANJA:
                 print("Jumlah harus berupa angka positif.")
         else:
             print("Item tidak ditemukan dalam menu.")
+
+if total_belanja >= MINIMUM_BELANJA:
+    print("\n=== Ringkasan Pesanan ===")
+    for entri in keranjang:
+        item = entri["item"]
+        jumlah = entri["jumlah"]
+        catatan = entri["catatan"]
+        harga = menu_item[item]["harga"]
+        print(f"{item} (x{jumlah}) - Rp{harga * jumlah} | Catatan: '{catatan}'")
+    print(f"Total harga: Rp{total_belanja}")
+    print("Pesanan dikonfirmasi! Silakan bayar langsung di kasir.")
+
+    pilihan = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
+    if pilihan == "ya":
+        jumlah_orang = input("Masukkan jumlah orang untuk membagi tagihan: ")
+        if jumlah_orang.isdigit() and int(jumlah_orang) > 0:
+            jumlah_orang = int(jumlah_orang)
+            bagian_per_orang = total_belanja / jumlah_orang
+            print(f"Setiap orang harus membayar: Rp{bagian_per_orang:.2f}")
+        else:
+            print("Jumlah orang harus berupa angka positif.")
+    elif pilihan == "tidak":
+        print("Terima kasih! Silakan bayar di kasir.")
+else:
+    print("Pesanan tidak memenuhi minimum belanja. Silakan coba lagi.")
