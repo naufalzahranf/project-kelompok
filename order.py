@@ -12,11 +12,6 @@ print("=== Selamat Datang di Restoran Markez ===")
 print("Daftar menu:")
 for item, info in menu_item.items():
     print(f"- {item}: Rp{info['harga']}")
-
-print("=== Selamat Datang di Restoran Markez ===")
-print("Daftar menu:")
-for item, info in menu_item.items():
-    print(f"- {item}: Rp{info['harga']}")
 for i in range(5):
     nama_item = input(f"\nMasukkan nama item yang ingin dipesan (pesanan ke-{i+1}, atau tekan Enter untuk selesai): ").title()
     if not nama_item:
