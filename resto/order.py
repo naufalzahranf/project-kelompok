@@ -55,6 +55,46 @@ def tampilkan_ringkasan(keranjang, total_belanja):
     else:
         print("Tidak ada pesanan yang dibuat.")
 
+def hitung_split_bill(keranjang, menu_item):
+    print("\n=== Split Bill ===")
+    jumlah_orang = input("Masukkan jumlah orang untuk membagi tagihan: ")
+    if jumlah_orang.isdigit() and int(jumlah_orang) > 0:
+        jumlah_orang = int(jumlah_orang)
+        total_split = 0
+        total_per_orang = []
+        sisa_keranjang = keranjang.copy()  # Salin keranjang untuk melacak sisa pesanan
+
+        for i in range(1, jumlah_orang + 1):
+            print(f"\nOrang {i}:")
+            total_orang = 0
+            while True:
+                if all(data["jumlah"] == 0 for data in sisa_keranjang.values()):
+                    print("Semua pesanan telah dibagi.")
+                    break
+
+                item_input = input("Masukkan nama item pesanan Anda (atau tekan Enter untuk selesai): ").title()
+                if not item_input:
+                    break
+                if item_input in sisa_keranjang and sisa_keranjang[item_input]["jumlah"] > 0:
+                    jumlah_input = input(f"Masukkan jumlah untuk {item_input} (tersisa {sisa_keranjang[item_input]['jumlah']}): ")
+                    if jumlah_input.isdigit() and int(jumlah_input) > 0:
+                        jumlah = int(jumlah_input)
+                        if jumlah <= sisa_keranjang[item_input]["jumlah"]:
+                            total_item = menu_item[item_input]["harga"] * jumlah
+                            total_orang += total_item
+                            sisa_keranjang[item_input]["jumlah"] -= jumlah
+                            print(f"Total untuk {item_input} (x{jumlah}): Rp{total_item}")
+                        else:
+                            print("Jumlah melebihi pesanan yang tersedia.")
+                    else:
+                        print("Jumlah harus berupa angka positif.")
+                else:
+                    print("Item tidak ditemukan atau sudah habis.")
+
+            print(f"Total untuk Orang {i}: Rp{total_orang}")
+            total_per_orang.append({"Orang": i, "Total": total_orang})
+            total_split += total_orang
+
 if __name__ == '__main__':
     menu_item = tampilkan_menu()
     if menu_item:
