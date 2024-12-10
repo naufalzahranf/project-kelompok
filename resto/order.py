@@ -111,6 +111,7 @@ def hitung_split_bill(keranjang, menu_item):
         print("Jumlah orang harus berupa angka positif.")
         return 0
 
+
 if __name__ == '__main__':
     menu_item = tampilkan_menu()
     if menu_item:
