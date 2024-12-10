@@ -20,7 +20,7 @@ def tampilkan_menu():
 
 
 def buat_pesanan(menu_item):
-    keranjang = []
+    keranjang = {}
     total_belanja = 0
 
     while True:
@@ -33,7 +33,13 @@ def buat_pesanan(menu_item):
             if jumlah_input.isdigit() and int(jumlah_input) > 0:
                 jumlah = int(jumlah_input)
                 catatan = input(f"Tambahkan catatan khusus untuk {nama_item}: ")
-                keranjang.append({"item": nama_item, "jumlah": jumlah, "catatan": catatan})
+                if nama_item in keranjang:
+                    keranjang[nama_item]["jumlah"] += jumlah
+                else:
+                    keranjang[nama_item] = {
+                        "jumlah": jumlah,
+                        "catatan": catatan
+                    }
                 total_belanja += menu_item[nama_item]["harga"] * jumlah
                 print(f"{jumlah} {nama_item} ditambahkan ke keranjang.")
             else:
@@ -43,13 +49,12 @@ def buat_pesanan(menu_item):
 
     return keranjang, total_belanja
 
-def tampilkan_ringkasan(keranjang, total_belanja):
+def tampilkan_ringkasan(keranjang, total_belanja, menu_item):
     if total_belanja > 0:
         print("\n=== Ringkasan Pesanan ===")
-        for entri in keranjang:
-            item = entri["item"]
-            jumlah = entri["jumlah"]
-            catatan = entri["catatan"]
+        for item, data in keranjang.items():
+            jumlah = data["jumlah"]
+            catatan = data["catatan"]
             print(f"{item} (x{jumlah}) - Rp{menu_item[item]['harga'] * jumlah} | Catatan: {catatan}")
         print(f"Total harga: Rp{total_belanja}")
     else:
@@ -95,6 +100,18 @@ def hitung_split_bill(keranjang, menu_item):
             total_per_orang.append({"Orang": i, "Total": total_orang})
             total_split += total_orang
 
+        # Tampilkan total split per orang
+        print("\n=== Total Split Bill ===")
+        for data in total_per_orang:
+            print(f"Orang {data['Orang']}: Rp{data['Total']}")
+
+        print(f"\nTotal semua tagihan (split): Rp{total_split}")
+        return total_split
+    else:
+        print("Jumlah orang harus berupa angka positif.")
+        return 0
+
+
 if __name__ == '__main__':
     menu_item = tampilkan_menu()
     if menu_item:
@@ -105,20 +122,20 @@ if __name__ == '__main__':
             print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
             print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
             tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
-            keranjang.extend(tambahan_keranjang)
+            for item, data in tambahan_keranjang.items():
+                if item in keranjang:
+                    keranjang[item]["jumlah"] += data["jumlah"]
+                else:
+                    keranjang[item] = data
             total_belanja += tambahan_belanja
 
-        tampilkan_ringkasan(keranjang, total_belanja)
+        tampilkan_ringkasan(keranjang, total_belanja, menu_item)
 
         pilihan = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
         if pilihan == "ya":
-            jumlah_orang = input("Masukkan jumlah orang untuk membagi tagihan: ")
-            if jumlah_orang.isdigit() and int(jumlah_orang) > 0:
-                jumlah_orang = int(jumlah_orang)
-                bagian_per_orang = total_belanja / jumlah_orang
-                print(f"Setiap orang harus membayar: Rp{bagian_per_orang:.2f}")
-            else:
-                print("Jumlah orang harus berupa angka positif.")
+            total_split = hitung_split_bill(keranjang, menu_item)
+            if total_split < total_belanja:
+                print("\nAda perbedaan dalam perhitungan. Mohon periksa ulang pesanan masing-masing.")
         elif pilihan == "tidak":
             print("Terima kasih! Silakan bayar di kasir.")
         else:
