@@ -105,11 +105,11 @@ def hitung_split_bill(keranjang, menu_item):
                             sisa_keranjang[item_input]["jumlah"] -= jumlah
                             print(f"Total untuk {item_input} (x{jumlah}): Rp{total_item}")
                         else:
-                            print("Jumlah melebihi pesanan yang tersedia.")
+                            print("Jumlah melebihi pesanan yang tersedia")
                     else:
-                        print("Jumlah harus berupa angka positif.")
+                        print("Jumlah harus berupa angka positif")
                 else:
-                    print("Item tidak ditemukan atau sudah habis.")
+                    print("Item tidak ditemukan atau sudah habis")
 
             print(f"Total untuk Orang {i}: Rp{total_orang}")
             total_per_orang.append({"Orang": i, "Total": total_orang})
