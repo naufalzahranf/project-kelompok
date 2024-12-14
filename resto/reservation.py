@@ -190,5 +190,4 @@ def reservasi_meja():
         else:
             print("Pilihan tidak valid. Reservasi selesai tanpa pesanan.")
 
-if __name__ == '__main__':
-    reservasi_meja()
+reservasi_meja()

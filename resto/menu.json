@@ -1,0 +1,10 @@
+{
+    "Tahu Krispi": {
+        "harga": 12000,
+        "deskripsi": "enak",
+        "komposisi": [
+            "tahu",
+            "krispi"
+        ]
+    }
+}
