@@ -141,8 +141,6 @@ def hitung_split_bill(keranjang, menu_item):
         return 0
 
 menu_item = tampilkan_menu()
-# if __name__ == '__main__':
-#     menu_item = tampilkan_menu()
 if menu_item:
         keranjang, total_belanja = buat_pesanan(menu_item)
 
@@ -158,7 +156,24 @@ if menu_item:
                     keranjang[item] = data
             total_belanja += tambahan_belanja
 
-        tampilkan_ringkasan(keranjang, total_belanja, menu_item)
+        while True:
+            tampilkan_ringkasan(keranjang, total_belanja, menu_item)
+            edit = input("Apakah Anda ingin mengedit pesanan Anda? (ya/tidak): ").lower()
+            if edit == "ya":
+                edit_pesanan(keranjang, menu_item)
+                total_belanja = sum(menu_item[item]["harga"] * data["jumlah"] for item, data in keranjang.items())
+                if total_belanja < 75000:
+                    print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
+                    print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
+                    tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                    for item, data in tambahan_keranjang.items():
+                        if item in keranjang:
+                            keranjang[item]["jumlah"] += data["jumlah"]
+                        else:
+                            keranjang[item] = data
+                    total_belanja += tambahan_belanja
+            else:
+                break
 
         pilihan = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
         if pilihan == "ya":
