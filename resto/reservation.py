@@ -105,9 +105,9 @@ def hitung_split_bill(keranjang, menu_item):
                             sisa_keranjang[item_input]["jumlah"] -= jumlah
                             print(f"Total untuk {item_input} (x{jumlah}): Rp{total_item}")
                         else:
-                            print("Jumlah melebihi pesanan yang tersedia.")
+                            print("Jumlah melebihi pesanan yang tersedia")
                     else:
-                        print("Jumlah harus berupa angka positif.")
+                        print("Jumlah harus berupa angka positif")
                 else:
                     print("Item tidak ditemukan atau sudah habis")
 
@@ -190,5 +190,4 @@ def reservasi_meja():
         else:
             print("Pilihan tidak valid. Reservasi selesai tanpa pesanan.")
 
-if __name__ == '__main__':
-    reservasi_meja()
+reservasi_meja()

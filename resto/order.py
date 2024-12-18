@@ -111,9 +111,10 @@ def hitung_split_bill(keranjang, menu_item):
         print("Jumlah orang harus berupa angka positif.")
         return 0
 
-if __name__ == '__main__':
-    menu_item = tampilkan_menu()
-    if menu_item:
+menu_item = tampilkan_menu()
+# if __name__ == '__main__':
+#     menu_item = tampilkan_menu()
+if menu_item:
         keranjang, total_belanja = buat_pesanan(menu_item)
 
         # Cek apakah total belanja memenuhi syarat minimal order
