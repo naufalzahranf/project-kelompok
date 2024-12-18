@@ -6,5 +6,21 @@
             "tahu",
             "krispi"
         ]
+    },
+    "Ayam Goreng": {
+        "harga": 20000,
+        "deskripsi": "-",
+        "komposisi": [
+            "ayam",
+            "tepung"
+        ]
+    },
+    "Teh Manis": {
+        "harga": 10000,
+        "deskripsi": "-",
+        "komposisi": [
+            "teh",
+            "gula"
+        ]
     }
 }

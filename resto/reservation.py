@@ -200,11 +200,39 @@ def reservasi_meja():
             if menu_item:
                 keranjang, total_belanja = buat_pesanan(menu_item)
 
-                minimal_order = 75000
-                keranjang, total_belanja = minimal_belanja(keranjang, total_belanja, menu_item, minimal_order)
+                # Memastikan pengecekan minimal belanja dilakukan setelah pesanan dibuat
+                while total_belanja < 75000:
+                    print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
+                    print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
+                    tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                    for item, data in tambahan_keranjang.items():
+                        if item in keranjang:
+                            keranjang[item]["jumlah"] += data["jumlah"]
+                        else:
+                            keranjang[item] = data
+                    total_belanja += tambahan_belanja
 
-                tampilkan_ringkasan(keranjang, total_belanja, menu_item)
+                # Menampilkan ringkasan pesanan dan edit jika perlu
+                while True:
+                    tampilkan_ringkasan(keranjang, total_belanja, menu_item)
+                    edit = input("Apakah Anda ingin mengedit pesanan Anda? (ya/tidak): ").lower()
+                    if edit == "ya":
+                        edit_pesanan(keranjang, menu_item)
+                        total_belanja = sum(menu_item[item]["harga"] * data["jumlah"] for item, data in keranjang.items())
+                        if total_belanja < 75000:
+                            print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
+                            print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
+                            tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                            for item, data in tambahan_keranjang.items():
+                                if item in keranjang:
+                                    keranjang[item]["jumlah"] += data["jumlah"]
+                                else:
+                                    keranjang[item] = data
+                            total_belanja += tambahan_belanja
+                    else:
+                        break
 
+                # Meminta pengguna untuk membagi tagihan atau tidak
                 pilihan_split = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
                 if pilihan_split == "ya":
                     total_split = hitung_split_bill(keranjang, menu_item)
@@ -212,12 +240,14 @@ def reservasi_meja():
                         print("\nAda perbedaan dalam perhitungan. Mohon periksa ulang pesanan masing-masing.")
                 else:
                     print("Terima kasih! Pesanan Anda telah tercatat.")
-            print(f"\nTerima kasih! Anda diharapkan datang 1 jam sebelum waktu reservasi, yaitu pukul {int(waktu.split(':')[0]) - 1:00}:00.")
+
+                print(f"\nTerima kasih! Anda diharapkan datang 1 jam sebelum waktu reservasi, yaitu pukul {int(waktu.split(':')[0]) - 1}:00:00.")
+                
         elif pilihan == "2":
-            waktu_sebelum = f"{int(waktu.split(':')[0]) - 1:00}:00"
+            waktu_sebelum = f"{int(waktu.split(':')[0]) - 1}:00:00"
             print(f"\nTerima kasih! Anda harus datang 1 jam sebelum waktu reservasi (pukul {waktu_sebelum}).")
             print("Silakan lakukan pemesanan di restoran saat tiba.")
         else:
             print("Pilihan tidak valid. Reservasi selesai tanpa pesanan.")
-
+            
 reservasi_meja()

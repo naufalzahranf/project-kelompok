@@ -3,5 +3,10 @@
         "nama": "udin",
         "waktu": "19:00",
         "jumlah_orang": 5
+    },
+    "Meja 3": {
+        "nama": "nugra",
+        "waktu": "19:00",
+        "jumlah_orang": 5
     }
 }
