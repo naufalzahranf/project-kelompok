@@ -130,14 +130,15 @@ def menu_admin():
     """Menu utama untuk admin."""
     if not autentikasi_admin():
         return
+
     try:
-        menu_item = tampilkan_menu()
+        menu_item = {}
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")
         menu_item = {}
 
     try:
-        reservations = tampilkan_reservasi()
+        reservations = {}
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")
         reservations = {}
@@ -172,5 +173,6 @@ def menu_admin():
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
+
 
 menu_admin()
