@@ -90,7 +90,7 @@ def tambah_menu(menu_item):
         }
         print(f"{nama_item} telah ditambahkan.")
         break
-    
+
 def update_menu(menu_item):
     """Memperbarui menu yang ada."""
     print("\n=== Update Menu ===")
@@ -129,7 +129,7 @@ def hapus_menu(menu_item):
         print(f"{nama_item} telah dihapus.")
     else:
         print(f"{nama_item} tidak ditemukan.")
-        
+
 def simpan_menu(menu_item):
     """Menyimpan menu ke file."""
     with open('menu.json', 'w') as file:
@@ -221,3 +221,5 @@ def menu_admin():
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
+            
+menu_admin()
