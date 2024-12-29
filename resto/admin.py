@@ -172,7 +172,7 @@ def menu_admin():
     """Menu utama untuk admin."""
     if not autentikasi_admin():
         return
-
+    
     try:
         menu_item = {}
     except Exception as e:
