@@ -16,6 +16,24 @@ def tampilkan_menu():
             print(f"- {nama}: Rp{detail['harga']}, Deskripsi: {detail['deskripsi']}, Komposisi: {', '.join(detail['komposisi'])}")
     return menu_item
 
+def autentikasi_admin():
+    """Memverifikasi password admin."""
+    sandi_default = "admin123"  
+    maksimal_percobaan = 3
+    percobaan = 0
+
+    while percobaan < maksimal_percobaan:
+        sandi = input("Masukkan sandi admin: ").strip()
+        if sandi == sandi_default:
+            print("Autentikasi berhasil. Selamat datang, Admin!")
+            return True
+        else:
+            percobaan += 1
+            print(f"Sandi salah. Anda memiliki {maksimal_percobaan - percobaan} kesempatan lagi.")
+    
+    print("Anda telah gagal memasukkan sandi. Keluar dari sistem.")
+    return False
+
 def tambah_menu(menu_item):
     """Menambahkan menu baru."""
     while True:
@@ -110,6 +128,8 @@ def simpan_reservasi(reservations):
 
 def menu_admin():
     """Menu utama untuk admin."""
+    if not autentikasi_admin():
+        return
     try:
         menu_item = tampilkan_menu()
     except Exception as e:
