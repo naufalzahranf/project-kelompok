@@ -172,21 +172,23 @@ def menu_admin():
     """Menu utama untuk admin."""
     if not autentikasi_admin():
         return
+    
     try:
+        with open('menu.json', 'r') as file:
+            menu_item = json.load(file)
+    except FileNotFoundError:
         menu_item = {}
-<<<<<<< HEAD
-    except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
-=======
     except json.JSONDecodeError:
         print("File json tidak ditemukan.")
->>>>>>> 364d274e2da460f9df2cf95f0b806d804a820189
         menu_item = {}
 
     try:
+        with open('reservations.json', 'r') as file:
+            reservations = json.load(file)
+    except FileNotFoundError:
         reservations = {}
-    except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
+    except json.JSONDecodeError:
+        print("Format file reservations.json tidak valid. Menggunakan reservasi kosong.")
         reservations = {}
 
     while True:
@@ -218,6 +220,4 @@ def menu_admin():
             print("Keluar dari menu admin.")
             break
         else:
-            print("Pilihan tidak valid. Silakan coba lagi.")
-
-menu_admin()
+            print("Pilihan tidak valid. Silakan coba lagi.")
