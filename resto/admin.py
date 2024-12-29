@@ -174,8 +174,13 @@ def menu_admin():
         return
     try:
         menu_item = {}
+<<<<<<< HEAD
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")
+=======
+    except json.JSONDecodeError:
+        print("File json tidak ditemukan.")
+>>>>>>> 364d274e2da460f9df2cf95f0b806d804a820189
         menu_item = {}
 
     try:
