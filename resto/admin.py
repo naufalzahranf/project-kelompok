@@ -174,15 +174,21 @@ def menu_admin():
         return
     
     try:
+        with open('menu.json', 'r') as file:
+            menu_item = json.load(file)
+    except FileNotFoundError:
         menu_item = {}
-    except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
+    except json.JSONDecodeError:
+        print("Format file menu.json tidak valid. Menggunakan menu kosong.")
         menu_item = {}
 
     try:
+        with open('reservations.json', 'r') as file:
+            reservations = json.load(file)
+    except FileNotFoundError:
         reservations = {}
-    except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
+    except json.JSONDecodeError:
+        print("Format file reservations.json tidak valid. Menggunakan reservasi kosong.")
         reservations = {}
 
     while True:
@@ -215,6 +221,5 @@ def menu_admin():
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
-
 
 menu_admin()
