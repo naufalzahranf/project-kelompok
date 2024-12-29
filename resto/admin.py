@@ -34,46 +34,88 @@ def autentikasi_admin():
     print("Anda telah gagal memasukkan sandi. Keluar dari sistem.")
     return False
 
+def validasi_input_abjad(pesan):
+    """Memvalidasi input hanya berupa huruf dan spasi."""
+    while True:
+        value = input(pesan).strip()
+        if value.replace(" ", "").isalpha():
+            return value
+        print("Input hanya boleh berupa huruf dan spasi. Coba lagi.")
+
+def validasi_input_angka(pesan):
+    """Memvalidasi input hanya berupa angka positif."""
+    while True:
+        value = input(pesan).strip()
+        if value.isdigit() and int(value) > 0:
+            return int(value)
+        print("Input harus berupa angka positif. Coba lagi.")
+
+def validasi_input_deskripsi(pesan):
+    """Memvalidasi input deskripsi untuk memastikan hanya huruf, spasi, dan koma."""
+    while True:
+        value = input(pesan).strip()
+        if all(komponen.replace(" ", "").isalpha() for komponen in value.split(",")):
+            return [komponen.strip() for komponen in value.split(",")]
+        print("Input deskripsi hanya boleh berupa huruf, spasi, dan koma. Coba lagi.")
+
+def validasi_input_komposisi(pesan):
+    """Memvalidasi input komposisi untuk memastikan hanya huruf, spasi, dan koma."""
+    while True:
+        value = input(pesan).strip()
+        if all(komponen.replace(" ", "").isalpha() for komponen in value.split(",")):
+            return [komponen.strip() for komponen in value.split(",")]
+        print("Input komposisi hanya boleh berupa huruf, spasi, dan koma. Coba lagi.")
+
 def tambah_menu(menu_item):
     """Menambahkan menu baru."""
+    if menu_item is None:
+        menu_item = {}
     while True:
         print("\n=== Tambah Menu ===")
-        nama_item = input("Masukkan nama item (atau tekan Enter untuk selesai): ").title()
+        nama_item = validasi_input_abjad("Masukkan nama item (atau tekan Enter untuk selesai): ").title()
         if not nama_item:
-            break
-        harga_input = input(f"Masukkan harga untuk {nama_item}: ")
-        if harga_input.isdigit() and int(harga_input) > 0:
-            harga = int(harga_input)
-            deskripsi = input(f"Masukkan deskripsi untuk {nama_item}: ")
-            komposisi = input(f"Masukkan komposisi untuk {nama_item} (pisahkan dengan koma, contoh: Ayam, Tepung, Rempah): ")
-            menu_item[nama_item] = {
-                "harga": harga,
-                "deskripsi": deskripsi,
-                "komposisi": [komponen.strip() for komponen in komposisi.split(",")]
-            }
-            print(f"{nama_item} telah ditambahkan.")
-        else:
-            print("Harga harus berupa angka positif.")
+            print("Nama item tidak boleh kosong. Coba lagi.")
+            continue
 
-        lanjut = input("Apakah Anda ingin menambah menu lain? (ya/tidak): ").lower()
-        if lanjut != 'ya':
-            break
+        harga = validasi_input_angka(f"Masukkan harga untuk {nama_item}: ")
 
+        deskripsi = validasi_input_deskripsi(f"Masukkan deskripsi untuk {nama_item}: ")
+
+        komposisi = validasi_input_komposisi(f"Masukkan komposisi untuk {nama_item} (pisahkan dengan koma, contoh: Ayam, Tepung, Rempah): ")
+
+        menu_item[nama_item] = {
+            "harga": harga,
+            "deskripsi": deskripsi,
+            "komposisi": komposisi
+        }
+        print(f"{nama_item} telah ditambahkan.")
+        break
+    
 def update_menu(menu_item):
     """Memperbarui menu yang ada."""
     print("\n=== Update Menu ===")
     nama_item = input("Masukkan nama item yang ingin diperbarui: ").title()
     if nama_item in menu_item:
         print(f"Item ditemukan: {nama_item}")
-        harga_input = input(f"Masukkan harga baru untuk {nama_item} (kosongkan jika tidak ingin mengubah): ")
-        if harga_input.isdigit() and int(harga_input) > 0:
-            menu_item[nama_item]['harga'] = int(harga_input)
-        deskripsi = input(f"Masukkan deskripsi baru untuk {nama_item} (kosongkan jika tidak ingin mengubah): ")
-        if deskripsi:
-            menu_item[nama_item]['deskripsi'] = deskripsi
-        komposisi = input(f"Masukkan komposisi baru untuk {nama_item} (kosongkan jika tidak ingin mengubah): ")
-        if komposisi:
-            menu_item[nama_item]['komposisi'] = [komponen.strip() for komponen in komposisi.split(",")]
+
+        while True:
+            harga_input = input(f"Masukkan harga baru untuk {nama_item} (kosongkan jika tidak ingin mengubah): ").strip()
+            if not harga_input:
+                break
+            if harga_input.isdigit() and int(harga_input) > 0:
+                menu_item[nama_item]['harga'] = int(harga_input)
+                break
+            else:
+                print("Harga harus berupa angka positif. Coba lagi.")
+
+        deskripsi_input = input(f"Masukkan deskripsi baru untuk {nama_item} (pisahkan dengan koma, kosongkan jika tidak ingin mengubah): ").strip()
+        if deskripsi_input:
+            menu_item[nama_item]['deskripsi'] = [komponen.strip() for komponen in deskripsi_input.split(",")]
+
+        komposisi_input = input(f"Masukkan komposisi baru untuk {nama_item} (pisahkan dengan koma, kosongkan jika tidak ingin mengubah): ").strip()
+        if komposisi_input:
+            menu_item[nama_item]['komposisi'] = [komponen.strip() for komponen in komposisi_input.split(",")]
+
         print(f"{nama_item} telah diperbarui.")
     else:
         print(f"{nama_item} tidak ditemukan.")
