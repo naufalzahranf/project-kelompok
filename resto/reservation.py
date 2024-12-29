@@ -1,9 +1,13 @@
 import json
+from datetime import datetime
 
 def tampilkan_menu():
     try:
         with open('menu.json', 'r') as file:
             menu_item = json.load(file)
+            if not menu_item:
+                print("Menu kosong. Admin belum menambah menu.")
+                return None
     except FileNotFoundError:
         print("Menu belum terse dia. Admin belum menambah menu.")
         return None
@@ -55,29 +59,56 @@ def edit_pesanan(keranjang, menu_item):
         for item, data in keranjang.items():
             print(f"- {item} (x{data['jumlah']}) | Catatan: {data['catatan']}")
 
-        pilihan = input("Apakah Anda ingin mengedit atau menghapus item? (edit/hapus/selesai): ").lower()
+        pilihan = input("Apakah Anda ingin mengedit, menghapus, atau menambah item? (edit/hapus/tambah/selesai): ").lower()
+        if pilihan not in ["edit", "hapus", "tambah", "selesai"]:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+            continue
+
         if pilihan == "selesai":
             break
 
-        nama_item = input("Masukkan nama item yang ingin diubah: ").title()
-        if nama_item in keranjang:
-            if pilihan == "edit":
-                jumlah_input = input(f"Masukkan jumlah baru untuk {nama_item}: ")
+        if pilihan == "edit" or pilihan == "hapus":
+            nama_item = input("Masukkan nama item yang ingin diubah: ").title()
+            if nama_item in keranjang:
+                if pilihan == "edit":
+                    jumlah_input = input(f"Masukkan jumlah baru untuk {nama_item}: ")
+                    if jumlah_input.isdigit() and int(jumlah_input) > 0:
+                        jumlah = int(jumlah_input)
+                        catatan = input(f"Masukkan catatan baru untuk {nama_item}: ")
+                        keranjang[nama_item]["jumlah"] = jumlah
+                        keranjang[nama_item]["catatan"] = catatan
+                        print(f"Pesanan {nama_item} telah diperbarui.")
+                    else:
+                        print("Jumlah harus berupa angka positif.")
+                elif pilihan == "hapus":
+                    del keranjang[nama_item]
+                    print(f"Pesanan {nama_item} telah dihapus dari keranjang.")
+            else:
+                print("Item tidak ditemukan dalam keranjang.")
+
+        elif pilihan == "tambah":
+            print("\n=== Daftar Menu ===")
+            for item, info in menu_item.items():
+                print(f"- {item}: Rp{info['harga']}")
+
+            nama_item = input("Masukkan nama item yang ingin ditambahkan: ").title()
+            if nama_item in menu_item:
+                jumlah_input = input(f"Masukkan jumlah untuk {nama_item}: ")
                 if jumlah_input.isdigit() and int(jumlah_input) > 0:
                     jumlah = int(jumlah_input)
-                    catatan = input(f"Masukkan catatan baru untuk {nama_item}: ")
-                    keranjang[nama_item]["jumlah"] = jumlah
-                    keranjang[nama_item]["catatan"] = catatan
-                    print(f"Pesanan {nama_item} telah diperbarui.")
+                    catatan = input(f"Tambahkan catatan khusus untuk {nama_item}: ")
+                    if nama_item in keranjang:
+                        keranjang[nama_item]["jumlah"] += jumlah
+                    else:
+                        keranjang[nama_item] = {
+                            "jumlah": jumlah,
+                            "catatan": catatan
+                        }
+                    print(f"{jumlah} {nama_item} ditambahkan ke keranjang.")
                 else:
                     print("Jumlah harus berupa angka positif.")
-            elif pilihan == "hapus":
-                del keranjang[nama_item]
-                print(f"Pesanan {nama_item} telah dihapus dari keranjang.")
-        else:
-            print("Item tidak ditemukan dalam keranjang.")
-
-
+            else:
+                print("Item tidak ditemukan dalam menu.")
 
 def tampilkan_ringkasan(keranjang, total_belanja, menu_item):
     if total_belanja > 0:
@@ -155,41 +186,87 @@ def hitung_split_bill(keranjang, menu_item):
         print("Jumlah orang harus berupa angka positif.")
         return 0
 
-
 def reservasi_meja():
     try:
         with open('reservations.json', 'r') as file:
-            reservations = json.load(file)
+            content = file.read().strip()  # Membaca isi file
+            reservations = json.loads(content) if content else {}  # Periksa jika kosong
     except FileNotFoundError:
-        reservations = {}
+        reservations = {}  # Jika file tidak ditemukan, inisialisasi dictionary kosong
 
     print("\n=== Reservasi Meja ===")
-    meja = input("Masukkan nomor meja yang ingin dipesan (misal: Meja 1): ").title()
+    while True:
+        meja = input("Masukkan nomor meja yang ingin dipesan (1-20): ").title()
+        if meja.isdigit() and 1 <= int(meja) <= 20:
+            meja = f"Meja {int(meja)}"
+            break
+        else:
+            print("Input tidak valid. Pilih nomor meja dari 1 hingga 20 tanpa simbol atau huruf.")
+
     if meja in reservations:
         print(f"Maaf, {meja} sudah dipesan.")
-    else:
+        return meja 
+
+    while True:
         nama_pelanggan = input("Masukkan nama Anda: ")
-        waktu = input("Masukkan waktu kedatangan (misal: 19:00): ")
-        while True:
-            jumlah_orang_input = input("Masukkan jumlah orang yang akan duduk di meja: ")
-            if jumlah_orang_input.isdigit() and int(jumlah_orang_input) > 0:
-                jumlah_orang = int(jumlah_orang_input)
-                break
+        if all(char.isalpha() or char.isspace() for char in nama_pelanggan) and nama_pelanggan.strip():
+            break
+        else:
+            print("Nama hanya boleh berisi huruf dan spasi, dan tidak boleh kosong. Silakan coba lagi.")
+
+    while True:
+        tanggal = input("Masukkan tanggal kedatangan (YYYY-MM-DD): ")
+        try:
+            tanggal_kedatangan = datetime.strptime(tanggal, "%Y-%m-%d").date()
+            if tanggal_kedatangan < datetime.now().date():
+                print("Tanggal kedatangan tidak boleh di masa lalu. Silakan coba lagi.")
             else:
-                print("Jumlah orang harus berupa angka positif. Silakan coba lagi.")
+                break
+        except ValueError:
+            print("Format tanggal tidak valid. Masukkan dalam format YYYY-MM-DD (contoh: 2024-12-28).")
 
-        reservations[meja] = {
-            "nama": nama_pelanggan,
-            "waktu": waktu,
-            "jumlah_orang": jumlah_orang
-        }
+    while True:
+        waktu = input("Masukkan waktu kedatangan (HH:MM): ")
+        if len(waktu) == 5 and waktu[:2].isdigit() and waktu[3:].isdigit() and waktu[2] == ':' and 0 <= int(waktu[:2]) <= 23 and 0 <= int(waktu[3:]) <= 59:
+            jam, menit = map(int, waktu.split(':'))
+            if jam < 11:
+                print("Maaf, resto belum buka. Jam operasional mulai pukul 11:00 pagi.")
+            elif jam >= 21:
+                print("Maaf, resto sudah tutup. Jam operasional sampai pukul 22:00 malam.")
+            else:
+                break
+        else: 
+            print("Format waktu tidak valid. Masukkan dalam format HH:MM (contoh: 19:00).")
 
-        with open('reservations.json', 'w') as file:
-            json.dump(reservations, file, indent=4)
+    while True:
+        jumlah_orang_input = input("Masukkan jumlah orang yang akan duduk di meja: ")
+        if jumlah_orang_input.isdigit() and  1 <= int(jumlah_orang_input) <= 20:
+            jumlah_orang = int(jumlah_orang_input)
+            break
+        else:
+            print("Jumlah orang melebihi kapasitas. Jumlah orang harus berupa angka positif. Silakan coba lagi.")
+
+    while True:
+        no_telepon = input("Masukkan nomor telepon Anda (minimal 12 digit, maksimal 13 digit, format Indonesia): ")
+        if no_telepon.isdigit() and 12 <= len(no_telepon) <= 13 and no_telepon.startswith("08"):
+            break
+        else:
+            print("Nomor telepon harus berupa angka, memiliki 12-13 digit, dan diawali dengan '08'. Silakan coba lagi.")
+
+    reservations[meja] = {
+        "nama": nama_pelanggan,
+        "tanggal": tanggal,
+        "waktu": waktu,
+        "jumlah_orang": jumlah_orang,
+        "no_telepon": no_telepon
+    }
+
+    with open('reservations.json', 'w') as file:
+        json.dump(reservations, file, indent=4)
 
         print(f"\nReservasi berhasil untuk {meja} pada pukul {waktu} atas nama {nama_pelanggan}.")
         print(f"Jumlah orang: {jumlah_orang}")
-
+        
         print("\nApakah Anda ingin memesan makanan sekarang atau saat tiba di restoran?")
         print("1. Pesan sekarang")
         print("2. Pesan saat tiba di restoran")
@@ -213,12 +290,41 @@ def reservasi_meja():
                     total_belanja += tambahan_belanja
 
                 # Menampilkan ringkasan pesanan dan edit jika perlu
-                while True:
-                    tampilkan_ringkasan(keranjang, total_belanja, menu_item)
-                    edit = input("Apakah Anda ingin mengedit pesanan Anda? (ya/tidak): ").lower()
-                    if edit == "ya":
-                        edit_pesanan(keranjang, menu_item)
-                        total_belanja = sum(menu_item[item]["harga"] * data["jumlah"] for item, data in keranjang.items())
+                if 'keranjang' in locals() and 'total_belanja' in locals():
+                    while True:
+                        tampilkan_ringkasan(keranjang, total_belanja, menu_item)
+                        edit = input("Apakah Anda ingin mengedit pesanan Anda? (ya/tidak): ").lower()
+                        if edit == "ya":
+                            edit_pesanan(keranjang, menu_item)
+                            total_belanja = sum(menu_item[item]["harga"] * data["jumlah"] for item, data in keranjang.items())
+                            if total_belanja < 75000:
+                                print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
+                                print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
+                                tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                                for item, data in tambahan_keranjang.items():
+                                    if item in keranjang:
+                                        keranjang[item]["jumlah"] += data["jumlah"]
+                                    else:
+                                        keranjang[item] = data
+                                total_belanja += tambahan_belanja
+                        elif edit == "tidak":
+                            if total_belanja < 75000:
+                                print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
+                                print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
+                                tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                                for item, data in tambahan_keranjang.items():
+                                    if item in keranjang:
+                                        keranjang[item]["jumlah"] += data["jumlah"]
+                                    else:
+                                        keranjang[item] = data
+                                total_belanja += tambahan_belanja
+                            else:
+                                break
+                        else:
+                            print("Pilihan tidak valid. Silakan coba lagi.")
+
+                    # Meminta pengguna untuk membagi tagihan atau tidak
+                    while True:
                         if total_belanja < 75000:
                             print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
                             print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
@@ -229,25 +335,31 @@ def reservasi_meja():
                                 else:
                                     keranjang[item] = data
                             total_belanja += tambahan_belanja
-                    else:
-                        break
+                        else:
+                            pilihan = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
+                            if pilihan == "ya":
+                                total_split = hitung_split_bill(keranjang, menu_item)
+                                if total_split < total_belanja:
+                                    print("\nAda perbedaan dalam perhitungan. Mohon periksa ulang pesanan masing-masing.")
+                                break
+                            elif pilihan == "tidak":
+                                print("Terima kasih! Silakan bayar di kasir.")
+                                break
+                            else:
+                                print("Pilihan tidak valid. Silakan coba lagi.")
 
-                # Meminta pengguna untuk membagi tagihan atau tidak
-                pilihan_split = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
-                if pilihan_split == "ya":
-                    total_split = hitung_split_bill(keranjang, menu_item)
-                    if total_split < total_belanja:
-                        print("\nAda perbedaan dalam perhitungan. Mohon periksa ulang pesanan masing-masing.")
-                else:
-                    print("Terima kasih! Pesanan Anda telah tercatat.")
-
-                print(f"\nTerima kasih! Anda diharapkan datang 1 jam sebelum waktu reservasi, yaitu pukul {int(waktu.split(':')[0]) - 1}:00:00.")
-                
+            jam, menit = map(int, waktu.split(':'))
+            jam_sebelum = (jam - 1) % 24
+            waktu_sebelum = f"{jam_sebelum:02}:{menit:02}"
+            print(f"\nTerima kasih! Anda diharapkan datang 1 jam sebelum waktu reservasi, yaitu pukul {waktu_sebelum}.")
+            return
         elif pilihan == "2":
-            waktu_sebelum = f"{int(waktu.split(':')[0]) - 1}:00:00"
+            jam, menit = map(int, waktu.split(':'))
+            jam_sebelum = (jam - 1) % 24
+            waktu_sebelum = f"{jam_sebelum:02}:{menit:02}"
             print(f"\nTerima kasih! Anda harus datang 1 jam sebelum waktu reservasi (pukul {waktu_sebelum}).")
             print("Silakan lakukan pemesanan di restoran saat tiba.")
         else:
             print("Pilihan tidak valid. Reservasi selesai tanpa pesanan.")
-            
+
 reservasi_meja()

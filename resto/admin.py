@@ -13,7 +13,9 @@ def tampilkan_menu():
     else:
         print("\n=== Daftar Menu ===")
         for nama, detail in menu_item.items():
-            print(f"- {nama}: Rp{detail['harga']}, Deskripsi: {detail['deskripsi']}, Komposisi: {', '.join(detail['komposisi'])}")
+            deskripsi = ", ".join(detail['deskripsi']) 
+            komposisi = ", ".join(detail['komposisi'])
+            print(f"- {nama}: Rp{detail['harga']}, Deskripsi: {deskripsi}, Komposisi: {komposisi}")
     return menu_item
 
 def autentikasi_admin():
@@ -149,7 +151,7 @@ def tampilkan_reservasi():
     else:
         print("\n=== Daftar Reservasi ===")
         for meja, detail in reservations.items():
-            print(f"- {meja}: Nama: {detail['nama']}, Waktu: {detail['waktu']}, Jumlah Orang: {detail['jumlah_orang']}")
+            print(f"- {meja}: Nama: {detail['nama']}, Tanggal: {detail['tanggal']}, Waktu: {detail['waktu']}, Jumlah Orang: {detail['jumlah_orang']}, Nomor Telepon: {detail['no_telepon']}")
     return reservations
 
 def hapus_reservasi(reservations):

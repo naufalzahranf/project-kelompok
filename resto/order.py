@@ -4,6 +4,9 @@ def tampilkan_menu():
     try:
         with open('menu.json', 'r') as file:
             menu_item = json.load(file)
+            if not menu_item:
+                print("Menu kosong. Admin belum menambah menu.")
+                return None
     except FileNotFoundError:
         print("Menu belum tersedia. Admin belum menambah menu.")
         return None
@@ -17,7 +20,6 @@ def tampilkan_menu():
         print(f"  Deskripsi: {','.join(deskripsi)}")
         print(f"  Komposisi: {', '.join(komposisi)}")
     return menu_item
-
 
 def buat_pesanan(menu_item):
     keranjang = {}
