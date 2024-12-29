@@ -220,6 +220,10 @@ def menu_admin():
             print("Keluar dari menu admin.")
             break
         else:
+<<<<<<< HEAD
             print("Pilihan tidak valid. Silakan coba lagi.")
 
 menu_admin()
+=======
+            print("Pilihan tidak valid. Silakan coba lagi.")
+>>>>>>> 3363fd03b74a3b3ce69031d5351e63e8e2f2b15a
