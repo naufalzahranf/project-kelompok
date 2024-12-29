@@ -22,5 +22,25 @@
             "teh",
             "gula"
         ]
+    },
+    "Jus Jambu": {
+        "harga": 10000,
+        "deskripsi": [
+            "enak cuy"
+        ],
+        "komposisi": [
+            "jambu",
+            "air",
+            "gula"
+        ]
+    },
+    "Kangkung": {
+        "harga": 5000,
+        "deskripsi": [
+            "sehat"
+        ],
+        "komposisi": [
+            "sayuran"
+        ]
     }
 }
