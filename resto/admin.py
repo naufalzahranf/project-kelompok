@@ -179,7 +179,7 @@ def menu_admin():
     except FileNotFoundError:
         menu_item = {}
     except json.JSONDecodeError:
-        print("Format file menu.json tidak valid. Menggunakan menu kosong.")
+        print("File json tidak ditemukan.")
         menu_item = {}
 
     try:
