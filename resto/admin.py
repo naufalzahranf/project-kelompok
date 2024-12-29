@@ -173,13 +173,13 @@ def menu_admin():
     if not autentikasi_admin():
         return
     try:
-        menu_item = tampilkan_menu()
+        menu_item = {}
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")
         menu_item = {}
 
     try:
-        reservations = tampilkan_reservasi()
+        reservations = {}
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")
         reservations = {}

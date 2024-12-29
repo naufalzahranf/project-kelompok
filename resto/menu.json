@@ -1,26 +1,14 @@
 {
-    "Tahu Krispi": {
-        "harga": 12000,
-        "deskripsi": "enak",
-        "komposisi": [
-            "tahu",
-            "krispi"
-        ]
-    },
-    "Ayam Goreng": {
-        "harga": 20000,
-        "deskripsi": "-",
-        "komposisi": [
-            "ayam",
-            "tepung"
-        ]
-    },
-    "Teh Manis": {
-        "harga": 10000,
-        "deskripsi": "-",
-        "komposisi": [
-            "teh",
+    "Jus Mangga": {
+        "harga": 40000,
+        "deskripsi": [
+            "air",
+            "alupkat",
             "gula"
+        ],
+        "komposisi": [
+            "mangga",
+            "air"
         ]
     },
     "Jus Jambu": {
