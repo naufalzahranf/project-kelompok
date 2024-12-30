@@ -110,13 +110,28 @@ def update_menu(menu_item):
             else:
                 print("Harga harus berupa angka positif. Coba lagi.")
 
-        deskripsi_input = input(f"Masukkan deskripsi baru untuk {nama_item} (pisahkan dengan koma, kosongkan jika tidak ingin mengubah): ").strip()
-        if deskripsi_input:
-            menu_item[nama_item]['deskripsi'] = [komponen.strip() for komponen in deskripsi_input.split(",")]
+        while True:
+            deskripsi_input = input(f"Masukkan deskripsi baru untuk {nama_item} (pisahkan dengan koma, kosongkan jika tidak ingin mengubah): ").strip()
+            if not deskripsi_input:  # Kosong, pertahankan deskripsi lama
+                break
+            deskripsi_list = [komponen.strip() for komponen in deskripsi_input.split(",") if komponen.strip()]
+            if all(komponen.replace(" ", "").isalpha() for komponen in deskripsi_list):
+                menu_item[nama_item]['deskripsi'] = deskripsi_list
+                print("Deskripsi berhasil diperbarui.")
+                break
+            print("Input deskripsi tidak valid. Pastikan hanya menggunakan huruf dan koma untuk memisahkan.")
 
-        komposisi_input = input(f"Masukkan komposisi baru untuk {nama_item} (pisahkan dengan koma, kosongkan jika tidak ingin mengubah): ").strip()
-        if komposisi_input:
-            menu_item[nama_item]['komposisi'] = [komponen.strip() for komponen in komposisi_input.split(",")]
+        # Update komposisi
+        while True:
+            komposisi_input = input(f"Masukkan komposisi baru untuk {nama_item} (pisahkan dengan koma, kosongkan jika tidak ingin mengubah): ").strip()
+            if not komposisi_input:  # Kosong, pertahankan komposisi lama
+                break
+            komposisi_list = [komponen.strip() for komponen in komposisi_input.split(",") if komponen.strip()]
+            if all(komponen.replace(" ", "").isalpha() for komponen in komposisi_list):
+                menu_item[nama_item]['komposisi'] = komposisi_list
+                print("Komposisi berhasil diperbarui.")
+                break
+            print("Input komposisi tidak valid. Pastikan hanya menggunakan huruf dan koma untuk memisahkan.")
 
         print(f"{nama_item} telah diperbarui.")
     else:
