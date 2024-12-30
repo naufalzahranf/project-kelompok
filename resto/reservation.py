@@ -71,15 +71,19 @@ def edit_pesanan(keranjang, menu_item):
             nama_item = input("Masukkan nama item yang ingin diubah: ").title()
             if nama_item in keranjang:
                 if pilihan == "edit":
-                    jumlah_input = input(f"Masukkan jumlah baru untuk {nama_item}: ")
-                    if jumlah_input.isdigit() and int(jumlah_input) > 0:
-                        jumlah = int(jumlah_input)
+                    sub_pilihan = input("Apakah Anda ingin mengedit jumlah, catatan, atau keduanya? (jumlah/catatan/keduanya): ").lower()
+                    if sub_pilihan == "jumlah" or sub_pilihan == "keduanya":
+                        jumlah_input = input(f"Masukkan jumlah baru untuk {nama_item}: ")
+                        if jumlah_input.isdigit() and int(jumlah_input) > 0:
+                            jumlah = int(jumlah_input)
+                            keranjang[nama_item]["jumlah"] = jumlah
+                            print(f"Jumlah {nama_item} telah diperbarui menjadi {jumlah}.")
+                        else:
+                            print("Jumlah harus berupa angka positif.")
+                    if sub_pilihan == "catatan" or sub_pilihan == "keduanya":
                         catatan = input(f"Masukkan catatan baru untuk {nama_item}: ")
-                        keranjang[nama_item]["jumlah"] = jumlah
                         keranjang[nama_item]["catatan"] = catatan
-                        print(f"Pesanan {nama_item} telah diperbarui.")
-                    else:
-                        print("Jumlah harus berupa angka positif.")
+                        print(f"Catatan untuk {nama_item} telah diperbarui.")
                 elif pilihan == "hapus":
                     del keranjang[nama_item]
                     print(f"Pesanan {nama_item} telah dihapus dari keranjang.")
@@ -96,20 +100,22 @@ def edit_pesanan(keranjang, menu_item):
                 jumlah_input = input(f"Masukkan jumlah untuk {nama_item}: ")
                 if jumlah_input.isdigit() and int(jumlah_input) > 0:
                     jumlah = int(jumlah_input)
-                    catatan = input(f"Tambahkan catatan khusus untuk {nama_item}: ")
+                    catatan_baru= input(f"Tambahkan catatan khusus untuk {nama_item}: ")
                     if nama_item in keranjang:
                         keranjang[nama_item]["jumlah"] += jumlah
-                    else:
-                        keranjang[nama_item] = {
+                        if catatan_baru:
+                            keranjang[nama_item]["catatan"] += f"; {catatan_baru}"
+                        else:
+                            keranjang[nama_item] = {
                             "jumlah": jumlah,
-                            "catatan": catatan
-                        }
+                            "catatan": catatan_baru
+                            }
                     print(f"{jumlah} {nama_item} ditambahkan ke keranjang.")
                 else:
                     print("Jumlah harus berupa angka positif.")
             else:
                 print("Item tidak ditemukan dalam menu.")
-
+                
 def tampilkan_ringkasan(keranjang, total_belanja, menu_item):
     if total_belanja > 0:
         print("\n=== Ringkasan Pesanan ===")
