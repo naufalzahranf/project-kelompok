@@ -1,7 +1,16 @@
 {
-    "Meja 131241241": {
-        "nama": "rafi;''",
-        "waktu": "ra3424@#@",
-        "jumlah_orang": 4
+    "Meja 18": {
+        "nama": "ereret",
+        "tanggal": "2024-12-30",
+        "waktu": "20:00",
+        "jumlah_orang": 4,
+        "no_telepon": "081296804074"
+    },
+    "Meja 1": {
+        "nama": "rafi",
+        "tanggal": "2024-12-30",
+        "waktu": "20:00",
+        "jumlah_orang": 4,
+        "no_telepon": "081296804074"
     }
 }
