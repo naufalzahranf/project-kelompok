@@ -10,5 +10,16 @@
             "garam",
             "garam api"
         ]
+    },
+    "Bebek Goreng": {
+        "harga": 30000,
+        "deskripsi": [
+            "bebek di goreng"
+        ],
+        "komposisi": [
+            "bebek",
+            "tepung",
+            "ayam"
+        ]
     }
 }
