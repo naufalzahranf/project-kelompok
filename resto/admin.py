@@ -91,6 +91,9 @@ def tambah_menu(menu_item):
             "komposisi": komposisi
         }
         print(f"{nama_item} telah ditambahkan.")
+        
+        # Simpan perubahan ke file
+        simpan_menu(menu_item)
         break
 
 def update_menu(menu_item):
@@ -131,9 +134,11 @@ def update_menu(menu_item):
                 menu_item[nama_item]['komposisi'] = komposisi_list
                 print("Komposisi berhasil diperbarui.")
                 break
-            print("Input komposisi tidak valid. Pastikan hanya menggunakan huruf dan koma untuk memisahkan.")
+            print("Input komposisi tidak valid. Pastikan hanya menggunakan huruf dan koma untuk memisahkan.")
 
         print(f"{nama_item} telah diperbarui.")
+        # Simpan perubahan ke file
+        simpan_menu(menu_item)
     else:
         print(f"{nama_item} tidak ditemukan.")
 
@@ -144,6 +149,9 @@ def hapus_menu(menu_item):
     if nama_item in menu_item:
         del menu_item[nama_item]
         print(f"{nama_item} telah dihapus.")
+        
+        # Simpan perubahan ke file
+        simpan_menu(menu_item)
     else:
         print(f"{nama_item} tidak ditemukan.")
 
@@ -181,6 +189,9 @@ def hapus_reservasi(reservations):
     if nomor_meja in reservations:
         del reservations[nomor_meja]
         print(f"Reservasi pada {nomor_meja} telah dihapus.")
+        
+        # Simpan perubahan ke file
+        simpan_reservasi(reservations)
     else:
         print(f"Reservasi pada {nomor_meja} tidak ditemukan.")
 
@@ -237,12 +248,9 @@ def menu_admin():
         elif pilihan == '6':
             hapus_reservasi(reservations)
         elif pilihan == '7':
-            simpan_menu(menu_item)
-            simpan_reservasi(reservations)
             print("Keluar dari menu admin.")
             break
         else:
-            print("Pilihan tidak valid. Silakan coba lagi.")
-            
-menu_admin()
+            print("Pilihan tidak valid. Silakan coba lagi.")
 
+menu_admin()
