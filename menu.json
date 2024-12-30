@@ -10,5 +10,14 @@
             "garam",
             "garam api"
         ]
+    },
+    "Jus": {
+        "harga": 20000,
+        "deskripsi": [
+            "jus saja looo"
+        ],
+        "komposisi": [
+            "buah"
+        ]
     }
 }
