@@ -314,7 +314,7 @@ def reservasi_meja():
     print("\n=== Reservasi Meja ===")
     while True:
         meja = input("Masukkan nomor meja yang ingin dipesan (1-20): ").title()
-        if meja.isdigit() and 1 <= int(meja) <= 6:
+        if meja.isdigit() and 1 <= int(meja) <= 20:
             meja = f"Meja {int(meja)}"
             break
         else:
@@ -363,7 +363,7 @@ def reservasi_meja():
 
     while True:
         jumlah_orang_input = input("Masukkan jumlah orang yang akan duduk di meja: ")
-        if jumlah_orang_input.isdigit() and  1 <= int(jumlah_orang_input) <= 20:
+        if jumlah_orang_input.isdigit() and  1 <= int(jumlah_orang_input) <= 6:
             jumlah_orang = int(jumlah_orang_input)
             break
         else:
