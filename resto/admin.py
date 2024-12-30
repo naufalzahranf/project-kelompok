@@ -24,7 +24,7 @@ def autentikasi_admin():
     maksimal_percobaan = 3
     percobaan = 0
 
-    while percobaan < maksimal_percobaan:
+    while percobaan < maksimal_percobaan:                
         sandi = input("Masukkan sandi admin: ").strip()
         if sandi == sandi_default:
             print("Autentikasi berhasil. Selamat datang, Admin!")

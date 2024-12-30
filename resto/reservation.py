@@ -235,7 +235,12 @@ def reservasi_meja():
         waktu = input("Masukkan waktu kedatangan (HH:MM): ")
         if len(waktu) == 5 and waktu[:2].isdigit() and waktu[3:].isdigit() and waktu[2] == ':' and 0 <= int(waktu[:2]) <= 23 and 0 <= int(waktu[3:]) <= 59:
             jam, menit = map(int, waktu.split(':'))
-            if jam < 11:
+            sekarang = datetime.now()
+            tanggal_reservasi = datetime.strptime(tanggal, "%Y-%m-%d").date()
+            
+            if tanggal_reservasi == sekarang.date() and (jam < sekarang.hour or (jam == sekarang.hour and menit <= sekarang.minute)):
+                print("Waktu kedatangan tidak boleh di masa lalu. Silakan coba lagi.")
+            elif jam < 11:
                 print("Maaf, resto belum buka. Jam operasional mulai pukul 11:00 pagi.")
             elif jam >= 21:
                 print("Maaf, resto sudah tutup. Jam operasional sampai pukul 22:00 malam.")
@@ -243,6 +248,7 @@ def reservasi_meja():
                 break
         else: 
             print("Format waktu tidak valid. Masukkan dalam format HH:MM (contoh: 19:00).")
+
 
     while True:
         jumlah_orang_input = input("Masukkan jumlah orang yang akan duduk di meja: ")
