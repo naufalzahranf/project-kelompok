@@ -1,14 +1,10 @@
 {
-    "Ayam Goreng": {
+    "Ayam Krispi": {
         "harga": 20000,
-        "deskripsi": [
-            "ayam digpreng"
-        ],
+        "deskripsi": "ayam tepung terigu",
         "komposisi": [
             "ayam",
-            "tepung",
-            "garam",
-            "garam api"
+            "terigu"
         ]
     },
     "Bebek Goreng": {

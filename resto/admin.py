@@ -166,7 +166,12 @@ def tampilkan_reservasi():
     else:
         print("\n=== Daftar Reservasi ===")
         for meja, detail in reservations.items():
-            print(f"- {meja}: Nama: {detail['nama']}, Tanggal: {detail['tanggal']}, Waktu: {detail['waktu']}, Jumlah Orang: {detail['jumlah_orang']}, Nomor Telepon: {detail['no_telepon']}")
+            nama = detail.get('nama', 'Tidak tersedia')
+            tanggal = detail.get('tanggal', 'Tidak tersedia')
+            waktu = detail.get('waktu', 'Tidak tersedia')
+            jumlah_orang = detail.get('jumlah_orang', 'Tidak tersedia')
+            no_telepon = detail.get('no_telepon', 'Tidak tersedia')
+            print(f"- {meja}: Nama: {nama}, Tanggal: {tanggal}, Waktu: {waktu}, Jumlah Orang: {jumlah_orang}, Nomor Telepon: {no_telepon}")
     return reservations
 
 def hapus_reservasi(reservations):
@@ -240,3 +245,4 @@ def menu_admin():
             print("Pilihan tidak valid. Silakan coba lagi.")
             
 menu_admin()
+
