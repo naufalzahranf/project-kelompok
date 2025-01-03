@@ -1,23 +1,24 @@
 {
-    "Ayam Krispi": {
-        "harga": 40000,
-        "deskripsi": [
-            "ayam digpreng"
-        ],
-        "komposisi": [
-            "ayam",
-            "tepung",
-            "garam",
-            "garam api"
-        ]
+    "Dessert": {
+        "Cheescake": {
+            "harga": 45000,
+            "deskripsi": [
+                "manis"
+            ],
+            "komposisi": [
+                "keju"
+            ]
+        }
     },
-    "Jus": {
-        "harga": 20000,
-        "deskripsi": [
-            "jus saja looo"
-        ],
-        "komposisi": [
-            "buah"
-        ]
+    "Western": {
+        "Steak Wagyu": {
+            "harga": 120000,
+            "deskripsi": [
+                "daginggg"
+            ],
+            "komposisi": [
+                "sapi"
+            ]
+        }
     }
 }

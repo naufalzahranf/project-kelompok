@@ -1,9 +1,66 @@
 {
+    "Meja 2": {
+        "nama": "nugra",
+        "tanggal": "2025-2-2",
+        "waktu": "12:00",
+        "jumlah_orang": 4,
+        "no_telepon": "0812345678901",
+        "pesanan": []
+    },
+    "Meja 3": {
+        "nama": "nugra",
+        "tanggal": "2025-4-4",
+        "waktu": "12:00",
+        "jumlah_orang": 4,
+        "no_telepon": "0812345678901",
+        "pesanan": [
+            {
+                "nama_item": "Steak Wagyu",
+                "kategori": "Western",
+                "jumlah": 2,
+                "subtotal": 240000,
+                "catatan": "c"
+            }
+        ]
+    },
     "Meja 4": {
         "nama": "nugra",
-        "tanggal": "2024-12-31",
-        "waktu": "19:00",
-        "jumlah_orang": 6,
-        "no_telepon": "089524448650"
+        "tanggal": "2025-2-2",
+        "waktu": "12:00",
+        "jumlah_orang": 4,
+        "no_telepon": "0812345678901",
+        "pesanan": []
+    },
+    "Meja 1": {
+        "nama": "ipul",
+        "tanggal": "2025-2-2",
+        "waktu": "12:00",
+        "jumlah_orang": 4,
+        "no_telepon": "0812345678901",
+        "pesanan": [
+            {
+                "nama_item": "Cheescake",
+                "kategori": "Dessert",
+                "jumlah": 6,
+                "subtotal": 270000,
+                "catatan": ""
+            }
+        ]
+    },
+    "Meja 9": {
+        "nama": "ipul",
+        "tanggal": "2025-2-2",
+        "waktu": "12:00",
+        "jumlah_orang": 2,
+        "no_telepon": "0812345678901",
+        "pesanan": [
+            {
+                "nama_item": "Cheescake",
+                "kategori": "Dessert",
+                "jumlah": 2,
+                "subtotal": 90000,
+                "catatan": ""
+            }
+        ]
     }
 }

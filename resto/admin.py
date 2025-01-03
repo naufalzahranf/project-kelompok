@@ -1,4 +1,6 @@
 import json
+import os
+from datetime import datetime
 
 def tampilkan_menu():
     """Menampilkan daftar menu."""
@@ -6,6 +8,9 @@ def tampilkan_menu():
         with open('menu.json', 'r') as file:
             kategori_menu = json.load(file)
     except FileNotFoundError:
+        kategori_menu = {}
+    except json.JSONDecodeError:
+        print("Format file menu.json tidak valid. Menggunakan menu kosong.")
         kategori_menu = {}
 
     if not kategori_menu:
@@ -15,9 +20,16 @@ def tampilkan_menu():
         for kategori, menu_items in kategori_menu.items():
             print(f"\nKategori: {kategori}")
             for nama, detail in menu_items.items():
-                deskripsi = ", ".join(detail['deskripsi'])
-                komposisi = ", ".join(detail['komposisi'])
-                print(f"- {nama}: Rp{detail['harga']}, Deskripsi: {deskripsi}, Komposisi: {komposisi}")
+                try:
+                    if isinstance(detail, dict):
+                        deskripsi = ", ".join(detail.get('deskripsi', []))
+                        komposisi = ", ".join(detail.get('komposisi', []))
+                        harga = detail.get('harga', 0)
+                        print(f"- {nama}: Rp{harga}, Deskripsi: {deskripsi}, Komposisi: {komposisi}")
+                    else:
+                        print(f"- {nama}: Data tidak valid")
+                except Exception as e:
+                    print(f"Error menampilkan {nama}: {str(e)}")
     return kategori_menu
 
 def autentikasi_admin():
@@ -172,6 +184,72 @@ def hapus_menu(kategori_menu):
     else:
         print(f"{nama_item} tidak ditemukan dalam kategori {kategori}.")
 
+def tampilkan_orderan():
+    """Menampilkan daftar orderan."""
+    try:
+        order_files = [f for f in os.listdir("orders") if f.startswith("order_") and f.endswith(".json")]
+        if not order_files:
+            print("Tidak ada orderan yang ditemukan.")
+            return
+
+        print("\n=== Daftar Orderan ===")
+        for i, filename in enumerate(order_files, 1):
+            print(f"\nOrder {i}: {filename}")
+            filepath = os.path.join("orders", filename)
+            with open(filepath, 'r') as file:
+                try:
+                    order_data = json.load(file)
+                    print(f"  Nama Pemesan: {order_data.get('nama_pemesan', 'Tidak diketahui')}")
+                    print(f"  Tanggal: {order_data.get('tanggal', 'Tidak diketahui')}")
+                    print(f"  Total Belanja: Rp{order_data.get('total_belanja', 0)}")
+                    print("  Pesanan:")
+                    for item in order_data.get('pesanan', []):
+                        print(f"    - {item['nama']} (x{item['jumlah']}), Subtotal: Rp{item['subtotal']}, Catatan: {item['catatan']}")
+                except json.JSONDecodeError:
+                    print(f"  Error: File {filename} rusak.")
+                except Exception as e:
+                    print(f"  Error membaca file {filename}: {e}")
+
+    except FileNotFoundError:
+        print("Direktori 'orders' tidak ditemukan.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat menampilkan orderan: {e}")
+
+def hapus_orderan():
+    """Menghapus orderan."""
+    try:
+        order_files = [f for f in os.listdir("orders") if f.startswith("order_") and f.endswith(".json")]
+        if not order_files:
+            print("Tidak ada orderan yang ditemukan.")
+            return
+
+        print("\n=== Hapus Orderan ===")
+        for i, filename in enumerate(order_files, 1):
+            print(f"{i}. {filename}")
+
+        while True:
+            pilihan = input("Masukkan nomor order yang ingin dihapus (atau tekan Enter untuk batal): ")
+            if not pilihan:
+                return
+
+            if pilihan.isdigit() and 1 <= int(pilihan) <= len(order_files):
+                break
+            else:
+                print("Pilihan tidak valid. Silakan coba lagi.")
+
+        filename_to_delete = order_files[int(pilihan) - 1]
+        filepath_to_delete = os.path.join("orders", filename_to_delete)
+        try:
+            os.remove(filepath_to_delete)
+            print(f"Orderan {filename_to_delete} telah dihapus.")
+        except OSError as e:
+            print(f"Terjadi kesalahan saat menghapus file: {e}")
+
+    except FileNotFoundError:
+        print("Direktori 'orders' tidak ditemukan.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat menghapus orderan: {e}")
+
 def tampilkan_reservasi():
     """Menampilkan daftar reservasi."""
     try:
@@ -190,7 +268,19 @@ def tampilkan_reservasi():
             waktu = detail.get('waktu', 'Tidak tersedia')
             jumlah_orang = detail.get('jumlah_orang', 'Tidak tersedia')
             no_telepon = detail.get('no_telepon', 'Tidak tersedia')
+            pesanan = detail.get('pesanan', [])
             print(f"- {meja}: Nama: {nama}, Tanggal: {tanggal}, Waktu: {waktu}, Jumlah Orang: {jumlah_orang}, Nomor Telepon: {no_telepon}")
+            if pesanan:
+                print("  Pesanan:")
+                for item in pesanan:
+                    nama_item = item.get('nama_item', 'Tidak tersedia')
+                    kategori = item.get('kategori', 'Tidak tersedia')
+                    jumlah = item.get('jumlah', 0)
+                    subtotal = item.get('subtotal', 0)
+                    catatan = item.get('catatan', 'Tidak ada catatan')
+                    print(f"    - {nama_item} (Kategori: {kategori}, Jumlah: {jumlah}, Subtotal: Rp{subtotal}, Catatan: {catatan})")
+            else:
+                print("  Tidak ada pesanan.")
     return reservations
 
 def hapus_reservasi(reservations):
@@ -218,10 +308,21 @@ def simpan_menu(kategori_menu):
         json.dump(kategori_menu, file, indent=4)
     print("Menu berhasil disimpan.")
 
+def inisialisasi_sistem():
+    """Memastikan semua direktori yang diperlukan sudah ada."""
+    try:
+        if not os.path.exists("orders"):
+            os.makedirs("orders")
+            print("Direktori orders berhasil dibuat.")
+    except Exception as e:
+        print(f"Error saat membuat direktori: {e}")
+
 def menu_admin():
     """Menu utama untuk admin."""
     if not autentikasi_admin():
         return
+    
+    inisialisasi_sistem()
     
     try:
         with open('menu.json', 'r') as file:
@@ -249,7 +350,9 @@ def menu_admin():
         print("4. Hapus Menu")
         print("5. Tampilkan Reservasi")
         print("6. Hapus Reservasi")
-        print("7. Keluar")
+        print("7. Tampilkan Orderan")  
+        print("8. Hapus Orderan")      # Tambahkan ini
+        print("9. Keluar")             # Tambahkan ini
         pilihan = input("Pilih menu: ")
 
         if pilihan == '1':
@@ -265,9 +368,12 @@ def menu_admin():
         elif pilihan == '6':
             hapus_reservasi(reservations)
         elif pilihan == '7':
+            tampilkan_orderan()
+        elif pilihan == '8':           # Tambahkan ini
+            hapus_orderan()
+        elif pilihan == '9':           # Tambahkan ini
             print("Keluar dari menu admin.")
             break
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
-
 menu_admin()
