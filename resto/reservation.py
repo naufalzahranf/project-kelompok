@@ -1,62 +1,101 @@
 import json
 from datetime import datetime
+import os
 
 def tampilkan_menu():
     try:
         with open('menu.json', 'r') as file:
-            menu_item = json.load(file)
-            if not menu_item:
+            kategori_menu = json.load(file)
+            if not kategori_menu:
                 print("Menu kosong. Admin belum menambah menu.")
                 return None
     except FileNotFoundError:
-        print("Menu belum terse dia. Admin belum menambah menu.")
+        print("Menu belum tersedia. Admin belum menambah menu.")
+        return None
+    except json.JSONDecodeError:
+        print("Format file menu.json tidak valid.")
         return None
 
     print("\n=== Menu Restoran ===")
-    for item, info in menu_item.items():
-        print(f"- {item}: Rp{info['harga']}")
-        deskripsi = info.get('deskripsi', 'Tidak tersedia.')
-        komposisi = info.get('komposisi', ['Tidak tersedia.'])
-        print(f"  Deskripsi: {deskripsi}")
-        print(f"  Komposisi: {', '.join(komposisi)}")
-    return menu_item
+    for kategori, menu_items in kategori_menu.items():
+        print(f"\nKategori: {kategori}")
+        for nama, detail in menu_items.items():
+            try:
+                if isinstance(detail, dict):
+                    deskripsi = ", ".join(detail.get('deskripsi', ['Tidak tersedia']))
+                    komposisi = ", ".join(detail.get('komposisi', ['Tidak tersedia']))
+                    harga = detail.get('harga', 0)
+                    print(f"- {nama}: Rp{harga}")
+                    print(f"  Deskripsi: {deskripsi}")
+                    print(f"  Komposisi: {komposisi}")
+                else:
+                    print(f"- {nama}: Data tidak valid")
+            except Exception as e:
+                print(f"Error menampilkan menu {nama}: {str(e)}")
+    return kategori_menu
 
-def buat_pesanan(menu_item):
+def pilih_kategori(kategori_menu):
+    while True:
+        print("\nKategori yang tersedia:")
+        for i, kategori in enumerate(kategori_menu.keys(), 1):
+            print(f"{i}. {kategori}")
+        
+        pilihan = input("\nPilih nomor kategori (atau tekan Enter untuk selesai): ")
+        if not pilihan:
+            return None
+        
+        if pilihan.isdigit() and 1 <= int(pilihan) <= len(kategori_menu):
+            return list(kategori_menu.keys())[int(pilihan) - 1]
+        print("Pilihan tidak valid. Silakan coba lagi.")
+
+def buat_pesanan(kategori_menu):
     keranjang = {}
     total_belanja = 0
 
     while True:
         print("\n=== Order Menu ===")
-        nama_item = input("Masukkan nama item yang ingin dipesan (atau tekan Enter untuk selesai): ").title()
-        if not nama_item:
+        kategori_terpilih = pilih_kategori(kategori_menu)
+        if not kategori_terpilih:
             break
-        if nama_item in menu_item:
+
+        print(f"\nMenu dalam kategori {kategori_terpilih}:")
+        for nama, detail in kategori_menu[kategori_terpilih].items():
+            print(f"- {nama}: Rp{detail['harga']}")
+            deskripsi = ", ".join(detail.get('deskripsi', ['Tidak tersedia']))
+            komposisi = ", ".join(detail.get('komposisi', ['Tidak tersedia']))
+            print(f"  Deskripsi: {deskripsi}")
+            print(f"  Komposisi: {komposisi}")
+
+        nama_item = input("\nMasukkan nama item yang ingin dipesan (atau tekan Enter untuk kembali): ").title()
+        if not nama_item:
+            continue
+
+        if nama_item in kategori_menu[kategori_terpilih]:
             jumlah_input = input(f"Masukkan jumlah {nama_item}: ")
             if jumlah_input.isdigit() and int(jumlah_input) > 0:
                 jumlah = int(jumlah_input)
                 catatan = input(f"Tambahkan catatan khusus untuk {nama_item}: ").lower()
 
-                # Buat kunci unik berdasarkan nama item dan catatan
                 kunci = f"{nama_item} ({catatan})"
-
                 if kunci in keranjang:
                     keranjang[kunci]["jumlah"] += jumlah
                 else:
                     keranjang[kunci] = {
                         "nama": nama_item,
                         "jumlah": jumlah,
-                        "catatan": catatan
+                        "catatan": catatan,
+                        "kategori": kategori_terpilih
                     }
-                total_belanja += menu_item[nama_item]["harga"] * jumlah
+                total_belanja += kategori_menu[kategori_terpilih][nama_item]["harga"] * jumlah
                 print(f"{jumlah} {nama_item} dengan catatan '{catatan}' ditambahkan ke keranjang.")
             else:
                 print("Jumlah harus berupa angka positif.")
         else:
-            print("Item tidak ditemukan dalam menu.")
+            print("Item tidak ditemukan dalam menu kategori ini.")
 
     return keranjang, total_belanja
 
-def edit_pesanan(keranjang, menu_item):
+def edit_pesanan(keranjang, kategori_menu):
     while True:
         print("\n=== Edit Keranjang ===")
         if not keranjang:
@@ -64,11 +103,10 @@ def edit_pesanan(keranjang, menu_item):
             break
 
         print("Keranjang Anda saat ini:")
-        # Tambahkan penomoran item
         keranjang_list = list(keranjang.items())
         for i, (item, data) in enumerate(keranjang_list, start=1):
-            nama_menu = item.split(" (")[0]  # Mengambil nama menu tanpa catatan
-            print(f"{i}. {nama_menu} (x{data['jumlah']}) | Catatan: {data['catatan']}")
+            nama_menu = item.split(" (")[0]
+            print(f"{i}. {nama_menu} (x{data['jumlah']}) | Kategori: {data['kategori']} | Catatan: {data['catatan']}")
 
         pilihan = input("Apakah Anda ingin mengedit, menghapus, atau menambah item? (edit/hapus/tambah/selesai): ").lower()
 
@@ -83,7 +121,7 @@ def edit_pesanan(keranjang, menu_item):
 
             nomor_item = int(nomor_item) - 1
             item_key, data_item = keranjang_list[nomor_item]
-            nama_menu = item_key.split(" (")[0]  # Mengambil nama menu tanpa catatan
+            nama_menu = item_key.split(" (")[0]
 
             sub_pilihan = input("Apakah Anda ingin mengedit jumlah atau catatan? (jumlah/catatan): ").lower()
 
@@ -97,15 +135,13 @@ def edit_pesanan(keranjang, menu_item):
 
             elif sub_pilihan == "catatan":
                 catatan_baru = input(f"Masukkan catatan baru untuk {nama_menu}: ")
-                # Buat kunci baru dengan catatan yang baru
                 kunci_baru = f"{nama_menu} ({catatan_baru})"
-                # Salin data dari item lama
                 keranjang[kunci_baru] = {
                     "jumlah": data_item["jumlah"],
                     "catatan": catatan_baru,
-                    "nama": nama_menu
+                    "nama": nama_menu,
+                    "kategori": data_item["kategori"]
                 }
-                # Hapus item lama
                 del keranjang[item_key]
                 print(f"Catatan untuk {nama_menu} telah diperbarui.")
 
@@ -125,91 +161,76 @@ def edit_pesanan(keranjang, menu_item):
             print(f"Item '{nama_menu}' telah dihapus dari keranjang.")
 
         elif pilihan == "tambah":
-            nama_item = input("Masukkan nama item yang ingin ditambahkan: ").title()
-
-            if nama_item not in menu_item:
-                print(f"Item '{nama_item}' tidak ada dalam menu. Silakan masukkan item yang valid.")
-                continue
-
-            jumlah = input(f"Masukkan jumlah untuk {nama_item}: ")
-            if not jumlah.isdigit() or int(jumlah) <= 0:
-                print("Jumlah harus berupa angka positif.")
-                continue
-
-            jumlah = int(jumlah)
-            catatan = input(f"Masukkan catatan untuk {nama_item}: ")
-            # Buat kunci dengan format yang konsisten
-            kunci = f"{nama_item} ({catatan})"
-            keranjang[kunci] = {
-                "jumlah": jumlah,
-                "catatan": catatan,
-                "nama": nama_item
-            }
-            print(f"Item '{nama_item}' telah ditambahkan ke keranjang.")
+            tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
+            for item, data in tambahan_keranjang.items():
+                if item in keranjang:
+                    keranjang[item]["jumlah"] += data["jumlah"]
+                else:
+                    keranjang[item] = data
 
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
-                
-def tampilkan_ringkasan(keranjang, total_belanja, menu_item):
+
+daftar_pesanan=[]
+def tampilkan_ringkasan(keranjang, total_belanja, kategori_menu):
+    global daftar_pesanan
+    daftar_pesanan = []  # Initialize daftar_pesanan as a list
     if total_belanja > 0:
-        print("\n" + "="*50)
-        print(" "*15 + "RINGKASAN PESANAN")
-        print("="*50)
+        print("\n" + "="*60)
+        print(" "*20 + "RINGKASAN PESANAN")
+        print("="*60)
         
         print("\nDaftar Pesanan:")
-        print("-"*50)
-        print(f"{'No.':<4} {'Menu':<20} {'Jumlah':<8} {'Subtotal':<12} {'Catatan'}")
-        print("-"*50)
+        print("-"*60)
+        print(f"{'No.':<4} {'Menu':<20} {'Kategori':<12} {'Jumlah':<8} {'Subtotal':<12} {'Catatan'}")
+        print("-"*60)
         
         for idx, (kunci, data) in enumerate(keranjang.items(), start=1):
             jumlah = data["jumlah"]
             nama_item = data["nama"]
+            kategori = data["kategori"]
             catatan = data["catatan"]
-            subtotal = menu_item[nama_item]['harga'] * jumlah
+            subtotal = kategori_menu[kategori][nama_item]['harga'] * jumlah
             
-            # Format setiap baris dengan rapi
-            print(f"{idx:<4} {nama_item:<20} x{jumlah:<7} Rp{subtotal:<10} {catatan}")
+            print(f"{idx:<4} {nama_item:<20} {kategori:<12} x{jumlah:<7} Rp{subtotal:<10} {catatan}")
+            
+            # Append each order to daftar_pesanan
+            daftar_pesanan.append({
+                "nama_item": nama_item,
+                "kategori": kategori,
+                "jumlah": jumlah,
+                "subtotal": subtotal,
+                "catatan": catatan
+            })
         
-        print("-"*50)
-        print(f"{'Total Belanja:':<33} Rp{total_belanja}")
-        print("="*50)
+        print("-"*60)
+        print(f"{'Total Belanja:':<45} Rp{total_belanja}")
+        print("="*60)
     else:
         print("\nTidak ada pesanan yang dibuat.")
 
-def minimal_belanja(keranjang, total_belanja, menu_item, minimal_order):
-    while total_belanja < minimal_order:
-        print(f"\nTotal belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp{minimal_order}.")
-        print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-        tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
-        for item, data in tambahan_keranjang.items():
-            if item in keranjang:
-                keranjang[item]["jumlah"] += data["jumlah"]
-            else:
-                keranjang[item] = data
-        total_belanja += tambahan_belanja
-    return keranjang, total_belanja
-
-def hitung_split_bill(keranjang, menu_item, total_belanja):
+def hitung_split_bill(keranjang, kategori_menu, total_belanja):
     # Tampilkan ringkasan pesanan terlebih dahulu
-    print("\n" + "="*50)
-    print(" "*15 + "RINGKASAN PESANAN")
-    print("="*50)
+    print("\n" + "="*60)
+    print(" "*20 + "RINGKASAN PESANAN")
+    print("="*60)
     
     print("\nDaftar Pesanan:")
-    print("-"*50)
-    print(f"{'No.':<4} {'Menu':<20} {'Jumlah':<8} {'Subtotal':<12} {'Catatan'}")
-    print("-"*50)
+    print("-"*60)
+    print(f"{'No.':<4} {'Menu':<20} {'Kategori':<12} {'Jumlah':<8} {'Subtotal':<12} {'Catatan'}")
+    print("-"*60)
     
     for idx, (kunci, data) in enumerate(keranjang.items(), start=1):
         jumlah = data["jumlah"]
         nama_item = data["nama"]
+        kategori = data["kategori"]
         catatan = data["catatan"]
-        subtotal = menu_item[nama_item]['harga'] * jumlah
-        print(f"{idx:<4} {nama_item:<20} x{jumlah:<7} Rp{subtotal:<10} {catatan}")
+        subtotal = kategori_menu[kategori][nama_item]['harga'] * jumlah
+        print(f"{idx:<4} {nama_item:<20} {kategori:<12} x{jumlah:<7} Rp{subtotal:<10} {catatan}")
     
-    print("-"*50)
-    print(f"{'Total Belanja:':<33} Rp{total_belanja}")
-    print("="*50)
+    print("-"*60)
+    print(f"{'Total Belanja:':<45} Rp{total_belanja}")
+    print("="*60)
 
     while True:
         print("\n=== Bagi Tagihan ===")
@@ -222,13 +243,13 @@ def hitung_split_bill(keranjang, menu_item, total_belanja):
 
     total_split = 0
     total_per_pelanggan = []
-    pesanan_per_pelanggan = []  # Untuk menyimpan detail pesanan tiap pelanggan
+    pesanan_per_pelanggan = []
     sisa_keranjang = keranjang.copy()
 
     for i in range(1, jumlah_pelanggan + 1):
         print(f"\nPelanggan {i}:")
         total_pelanggan = 0
-        pesanan_pelanggan = []  # Untuk menyimpan pesanan pelanggan ini
+        pesanan_pelanggan = []
         
         while True:
             if all(data["jumlah"] == 0 for data in sisa_keranjang.values()):
@@ -239,7 +260,7 @@ def hitung_split_bill(keranjang, menu_item, total_belanja):
             menu_tersedia = [(key, data) for key, data in sisa_keranjang.items() if data["jumlah"] > 0]
             for idx, (item, data) in enumerate(menu_tersedia, start=1):
                 nama_menu = item.split(" (")[0]
-                print(f"{idx}. {nama_menu} (tersisa {data['jumlah']}) | Catatan: {data['catatan']}")
+                print(f"{idx}. {nama_menu} ({data['kategori']}) (tersisa {data['jumlah']}) | Catatan: {data['catatan']}")
 
             pilihan_menu = input("Masukkan nomor menu yang ingin dipesan (atau tekan Enter untuk selesai): ")
             if not pilihan_menu:
@@ -253,13 +274,14 @@ def hitung_split_bill(keranjang, menu_item, total_belanja):
                     jumlah = int(jumlah_input)
                     if jumlah <= data_menu["jumlah"]:
                         nama_menu = data_menu["nama"]
-                        total_item = menu_item[nama_menu]["harga"] * jumlah
+                        kategori = data_menu["kategori"]
+                        total_item = kategori_menu[kategori][nama_menu]["harga"] * jumlah
                         total_pelanggan += total_item
                         sisa_keranjang[menu_dipilih]["jumlah"] -= jumlah
                         
-                        # Simpan detail pesanan
                         pesanan_pelanggan.append({
                             "menu": nama_menu,
+                            "kategori": kategori,
                             "jumlah": jumlah,
                             "total": total_item,
                             "catatan": data_menu["catatan"]
@@ -278,10 +300,9 @@ def hitung_split_bill(keranjang, menu_item, total_belanja):
         pesanan_per_pelanggan.append({"Pelanggan": i, "Pesanan": pesanan_pelanggan})
         total_split += total_pelanggan
 
-    # Tampilkan ringkasan bagi tagihan dengan detail pesanan
-    print("\n" + "="*50)
-    print(" "*15 + "RINGKASAN BAGI TAGIHAN")
-    print("="*50)
+    print("\n" + "="*60)
+    print(" "*20 + "RINGKASAN BAGI TAGIHAN")
+    print("="*60)
 
     for data_pelanggan in pesanan_per_pelanggan:
         pelanggan = data_pelanggan["Pelanggan"]
@@ -289,21 +310,22 @@ def hitung_split_bill(keranjang, menu_item, total_belanja):
         total = next(x["Total"] for x in total_per_pelanggan if x["Pelanggan"] == pelanggan)
         
         print(f"\nPelanggan {pelanggan}:")
-        print("-"*50)
-        print(f"{'No.':<4} {'Menu':<20} {'Jumlah':<8} {'Subtotal':<12} {'Catatan'}")
-        print("-"*50)
+        print("-"*60)
+        print(f"{'No.':<4} {'Menu':<20} {'Kategori':<12} {'Jumlah':<8} {'Subtotal':<12} {'Catatan'}")
+        print("-"*60)
         
         for idx, item in enumerate(pesanan, start=1):
-            print(f"{idx:<4} {item['menu']:<20} x{item['jumlah']:<7} Rp{item['total']:<10} {item['catatan']}")
+            print(f"{idx:<4} {item['menu']:<20} {item['kategori']:<12} x{item['jumlah']:<7} Rp{item['total']:<10} {item['catatan']}")
         
-        print("-"*50)
-        print(f"{'Total Bagian:':<33} Rp{total}")
-        print("="*50)
+        print("-"*60)
+        print(f"{'Total Bagian:':<45} Rp{total}")
+        print("="*60)
 
     print(f"\nTotal semua tagihan: Rp{total_split}")
     return total_split
 
 def reservasi_meja():
+    global daftar_pesanan
     try:
         with open('reservations.json', 'r') as file:
             content = file.read().strip()  # Membaca isi file
@@ -316,13 +338,12 @@ def reservasi_meja():
         meja = input("Masukkan nomor meja yang ingin dipesan (1-20): ").title()
         if meja.isdigit() and 1 <= int(meja) <= 20:
             meja = f"Meja {int(meja)}"
-            break
+            if meja in reservations:
+                print(f"Maaf, {meja} sudah dipesan. Silakan pilih meja lain.")
+            else:
+                break
         else:
             print("Input tidak valid. Pilih nomor meja dari 1 hingga 20 tanpa simbol atau huruf.")
-
-    if meja in reservations:
-        print(f"Maaf, {meja} sudah dipesan.")
-        return meja 
 
     while True:
         nama_pelanggan = input("Masukkan nama Anda: ")
@@ -381,48 +402,50 @@ def reservasi_meja():
         "tanggal": tanggal,
         "waktu": waktu,
         "jumlah_orang": jumlah_orang,
-        "no_telepon": no_telepon
+        "no_telepon": no_telepon,
+        "pesanan": [] 
     }
 
-    with open('reservations.json', 'w') as file:
-        json.dump(reservations, file, indent=4)
+    print(f"\nReservasi berhasil untuk {meja} pada pukul {waktu} atas nama {nama_pelanggan}.")
+    print(f"Jumlah orang: {jumlah_orang}")
+    
+    print("\nApakah Anda ingin memesan makanan sekarang atau saat tiba di restoran?")
+    print("1. Pesan sekarang")
+    print("2. Pesan saat tiba di restoran")
+    pilihan = input("Masukkan pilihan Anda (1/2): ")
 
-        print(f"\nReservasi berhasil untuk {meja} pada pukul {waktu} atas nama {nama_pelanggan}.")
-        print(f"Jumlah orang: {jumlah_orang}")
-        
-        print("\nApakah Anda ingin memesan makanan sekarang atau saat tiba di restoran?")
-        print("1. Pesan sekarang")
-        print("2. Pesan saat tiba di restoran")
-        pilihan = input("Masukkan pilihan Anda (1/2): ")
+    if pilihan == "1":
+        kategori_menu = tampilkan_menu()
+        if kategori_menu:
+            keranjang, total_belanja = buat_pesanan(kategori_menu)
 
-        if pilihan == "1":
-            menu_item = tampilkan_menu()
-            if menu_item:
-                    keranjang, total_belanja = buat_pesanan(menu_item)
-
-                    # Cek apakah total belanja memenuhi syarat minimal order
-                    while total_belanja < 75000:
-                        print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
-                        print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-                        tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
-                        for item, data in tambahan_keranjang.items():
-                            if item in keranjang:
-                                keranjang[item]["jumlah"] += data["jumlah"]
-                            else:
-                                keranjang[item] = data
-                        total_belanja += tambahan_belanja
+            # Cek apakah total belanja memenuhi syarat minimal order
+            while total_belanja < 75000:
+                print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
+                print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
+                tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
+                for item, data in tambahan_keranjang.items():
+                    if item in keranjang:
+                        keranjang[item]["jumlah"] += data["jumlah"]
+                    else:
+                        keranjang[item] = data
+                total_belanja += tambahan_belanja
 
             if 'keranjang' in locals() and 'total_belanja' in locals():
                 while True:
-                    tampilkan_ringkasan(keranjang, total_belanja, menu_item)
+                    tampilkan_ringkasan(keranjang, total_belanja, kategori_menu)
                     edit = input("Apakah Anda ingin mengedit pesanan Anda? (ya/tidak): ").lower()
                     if edit == "ya":
-                        edit_pesanan(keranjang, menu_item)
-                        total_belanja = sum(menu_item[data["nama"]]["harga"] * data["jumlah"] for data in keranjang.values())
+                        edit_pesanan(keranjang, kategori_menu)
+                        # Hitung ulang total belanja
+                        total_belanja = sum(
+                            kategori_menu[data["kategori"]][data["nama"]]["harga"] * data["jumlah"]
+                            for data in keranjang.values()
+                        )
                         if total_belanja < 75000:
                             print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
                             print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-                            tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                            tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
                             for item, data in tambahan_keranjang.items():
                                 if item in keranjang:
                                     keranjang[item]["jumlah"] += data["jumlah"]
@@ -433,7 +456,7 @@ def reservasi_meja():
                         if total_belanja < 75000:
                             print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
                             print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-                            tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                            tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
                             for item, data in tambahan_keranjang.items():
                                 if item in keranjang:
                                     keranjang[item]["jumlah"] += data["jumlah"]
@@ -449,7 +472,7 @@ def reservasi_meja():
                     if total_belanja < 75000:
                         print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
                         print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-                        tambahan_keranjang, tambahan_belanja = buat_pesanan(menu_item)
+                        tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
                         for item, data in tambahan_keranjang.items():
                             if item in keranjang:
                                 keranjang[item]["jumlah"] += data["jumlah"]
@@ -459,7 +482,7 @@ def reservasi_meja():
                     else:
                         pilihan = input("\nApakah Anda ingin membagi tagihan? (ya/tidak): ").lower()
                         if pilihan == "ya":
-                            total_split = hitung_split_bill(keranjang, menu_item, total_belanja)  # Tambahkan total_belanja sebagai parameter
+                            total_split = hitung_split_bill(keranjang, kategori_menu, total_belanja)
                             if total_split < total_belanja:
                                 print("\nAda perbedaan dalam perhitungan. Mohon periksa ulang pesanan masing-masing.")
                             break
@@ -468,18 +491,27 @@ def reservasi_meja():
                             break
                         else:
                             print("Pilihan tidak valid. Silakan coba lagi.")
-            jam, menit = map(int, waktu.split(':'))
-            jam_sebelum = (jam - 1) % 24
-            waktu_sebelum = f"{jam_sebelum:02}:{menit:02}"
-            print(f"\nTerima kasih! Anda diharapkan datang 1 jam sebelum waktu reservasi, yaitu pukul {waktu_sebelum}.")
-            return
-        elif pilihan == "2":
-            jam, menit = map(int, waktu.split(':'))
-            jam_sebelum = (jam - 1) % 24
-            waktu_sebelum = f"{jam_sebelum:02}:{menit:02}"
-            print(f"\nTerima kasih! Anda harus datang 1 jam sebelum waktu reservasi (pukul {waktu_sebelum}).")
-            print("Silakan lakukan pemesanan di restoran saat tiba.")
-        else:
-            print("Pilihan tidak valid. Reservasi selesai tanpa pesanan.")
+                        
+                        jam, menit = map(int, waktu.split(':'))
+                        jam_sebelum = (jam - 1) % 24
+                        waktu_sebelum = f"{jam_sebelum:02}:{menit:02}"
+                        print(f"\nTerima kasih! Anda diharapkan datang 1 jam sebelum waktu reservasi, yaitu pukul {waktu_sebelum}.")
+                        return
+
+                # Update pesanan in reservations
+                reservations[meja]["pesanan"] = daftar_pesanan
+
+    elif pilihan == "2":
+        jam, menit = map(int, waktu.split(':'))
+        jam_sebelum = (jam - 1) % 24
+        waktu_sebelum = f"{jam_sebelum:02}:{menit:02}"
+        print(f"\nTerima kasih! Anda harus datang 1 jam sebelum waktu reservasi (pukul {waktu_sebelum}).")
+        print("Silakan lakukan pemesanan di restoran saat tiba.")
+    else:
+        print("Pilihan tidak valid. Reservasi selesai tanpa pesanan.")
+
+    # Save reservations to file
+    with open('reservations.json', 'w') as file:
+        json.dump(reservations, file, indent=4)
 
 reservasi_meja()
