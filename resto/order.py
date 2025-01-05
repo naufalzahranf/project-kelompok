@@ -266,6 +266,8 @@ def edit_pesanan(keranjang, kategori_menu, total_belanja, nama_pemesan):
 
 
 def tampilkan_ringkasan(keranjang, total_belanja, kategori_menu, nama_pemesan):
+    global daftar_pesanan
+    daftar_pesanan = []  # Initialize daftar_pesanan as a list
     if total_belanja > 0:
         print("\n" + "="*60)
         print(" "*20 + "RINGKASAN PESANAN")
@@ -285,6 +287,15 @@ def tampilkan_ringkasan(keranjang, total_belanja, kategori_menu, nama_pemesan):
             subtotal = kategori_menu[kategori][nama_item]['harga'] * jumlah
             
             print(f"{idx:<4} {nama_item:<20} {kategori:<12} x{jumlah:<7} Rp{subtotal:<10} {catatan}")
+            
+            # Append each order to daftar_pesanan
+            daftar_pesanan.append({
+                "nama_item": nama_item,
+                "kategori": kategori,
+                "jumlah": jumlah,
+                "subtotal": subtotal,
+                "catatan": catatan
+            })
         
         print("-"*60)
         print(f"{'Total Belanja:':<45} Rp{total_belanja}")
@@ -413,26 +424,19 @@ if kategori_menu:
 
     if nama_pemesan is None:  # Handle jika nama kosong
         exit()
+        
     # Cek apakah total belanja memenuhi syarat minimal order
     while total_belanja < 75000:
         print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
         print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-        # Passing nama_pemesan yang sudah ada ke fungsi buat_pesanan
-        tambahan_keranjang, tambahan_belanja, _ = buat_pesanan(kategori_menu, nama_pemesan)
-        for item, data in tambahan_keranjang.items():
-            if item in keranjang:
-                keranjang[item]["jumlah"] += data["jumlah"]
-            else:
-                keranjang[item] = data
-
+        
+        # Gunakan keranjang yang sudah ada sebagai existing_keranjang
         keranjang, total_belanja, _ = buat_pesanan(
             kategori_menu,
             nama_pemesan,
             existing_keranjang=keranjang,
             existing_total=total_belanja
         )
-        keranjang = tambahan_keranjang
-        total_belanja += tambahan_belanja
 
 if 'keranjang' in locals() and 'total_belanja' in locals():
     while True:
@@ -440,46 +444,25 @@ if 'keranjang' in locals() and 'total_belanja' in locals():
         edit = input("Apakah Anda ingin mengedit pesanan Anda? (ya/tidak): ").lower()
         if edit == "ya":
             keranjang, total_belanja = edit_pesanan(keranjang, kategori_menu, total_belanja, nama_pemesan)
-            # edit_pesanan(keranjang, kategori_menu)
-            # Hitung ulang total belanja
-            total_belanja = sum(
-                kategori_menu[data["kategori"]][data["nama"]]["harga"] * data["jumlah"]
-                for data in keranjang.values()
-            )
             if total_belanja < 75000:
                 print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
                 print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-                tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
-                for item, data in tambahan_keranjang.items():
-                    if item in keranjang:
-                        keranjang[item]["jumlah"] += data["jumlah"]
-                    else:
-                        keranjang[item] = data
                 keranjang, total_belanja, _ = buat_pesanan(
                     kategori_menu,
                     nama_pemesan,
                     existing_keranjang=keranjang,
                     existing_total=total_belanja
                 )
-                total_belanja += tambahan_belanja
         elif edit == "tidak":
             if total_belanja < 75000:
                 print(f"Total belanja Anda saat ini Rp{total_belanja}. Minimal belanja adalah Rp75.000.")
                 print("Silakan tambahkan pesanan untuk memenuhi syarat minimal belanja.")
-                tambahan_keranjang, tambahan_belanja = buat_pesanan(kategori_menu)
-                for item, data in tambahan_keranjang.items():
-                    if item in keranjang:
-                        keranjang[item]["jumlah"] += data["jumlah"]
-                    else:
-                        keranjang[item] = data
                 keranjang, total_belanja, _ = buat_pesanan(
                     kategori_menu,
                     nama_pemesan,
                     existing_keranjang=keranjang,
                     existing_total=total_belanja
                 )
-                keranjang = tambahan_keranjang
-                total_belanja += tambahan_belanja
                 continue
             else:
                 break

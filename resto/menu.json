@@ -10,22 +10,15 @@
                 "susu"
             ]
         },
-        "Keju Bakar": {
-            "harga": 4654,
+        "Donat": {
+            "harga": 20000,
             "deskripsi": [
-                "ergte"
+                "enak sehat dan bergizi"
             ],
             "komposisi": [
-                "rht"
-            ]
-        },
-        "F": {
-            "harga": 20,
-            "deskripsi": [
-                "ed"
-            ],
-            "komposisi": [
-                "qew"
+                "tepung",
+                "margarin",
+                "gula"
             ]
         }
     }
