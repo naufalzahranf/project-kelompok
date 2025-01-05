@@ -1,0 +1,28 @@
+{
+    "nama_pemesan": "Wg",
+    "tanggal": "2025-01-05 18:07:44",
+    "total_belanja": 80000,
+    "pesanan": [
+        {
+            "nama": "Cheese",
+            "kategori": "Dessert",
+            "jumlah": 1,
+            "catatan": "wrg",
+            "subtotal": 10000
+        },
+        {
+            "nama": "Donat",
+            "kategori": "Dessert",
+            "jumlah": 3,
+            "catatan": "rhs",
+            "subtotal": 60000
+        },
+        {
+            "nama": "Cheese",
+            "kategori": "Dessert",
+            "jumlah": 1,
+            "catatan": "wrhrh",
+            "subtotal": 10000
+        }
+    ]
+}
