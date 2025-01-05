@@ -1,25 +1,31 @@
 {
     "Dessert": {
-        "Donat": {
+        "Cheese": {
             "harga": 10000,
             "deskripsi": [
-                "bulat"
+                "keju"
             ],
             "komposisi": [
-                "terigu",
-                "kentang"
+                "keju",
+                "susu"
             ]
         },
-        "Chessecake": {
-            "harga": 100000,
+        "Keju Bakar": {
+            "harga": 4654,
             "deskripsi": [
-                "bulat",
-                "mantap"
+                "ergte"
             ],
             "komposisi": [
-                "terigu",
-                "kentang",
-                "racun"
+                "rht"
+            ]
+        },
+        "F": {
+            "harga": 20,
+            "deskripsi": [
+                "ed"
+            ],
+            "komposisi": [
+                "qew"
             ]
         }
     }
