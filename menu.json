@@ -1,14 +1,24 @@
 {
-    "Ayam Goreng": {
-        "harga": 20000,
-        "deskripsi": [
-            "ayam digpreng"
-        ],
-        "komposisi": [
-            "ayam",
-            "tepung",
-            "garam",
-            "garam api"
-        ]
+    "Dessert": {
+        "Cheescake": {
+            "harga": 45000,
+            "deskripsi": [
+                "manis"
+            ],
+            "komposisi": [
+                "keju"
+            ]
+        }
+    },
+    "Western": {
+        "Steak Wagyu": {
+            "harga": 120000,
+            "deskripsi": [
+                "daginggg"
+            ],
+            "komposisi": [
+                "sapi"
+            ]
+        }
     }
 }
