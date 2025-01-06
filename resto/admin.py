@@ -17,11 +17,20 @@ def tampilkan_menu():
         print("Menu kosong.")
     else:
         print("\n=== Daftar Menu ===")
-        for nama, detail in menu_item.items():
-            deskripsi = ", ".join(detail['deskripsi']) 
-            komposisi = ", ".join(detail['komposisi'])
-            print(f"- {nama}: Rp{detail['harga']}, Deskripsi: {deskripsi}, Komposisi: {komposisi}")
-    return menu_item
+        for kategori, menu_items in kategori_menu.items():
+            print(f"\nKategori: {kategori}")
+            for nama, detail in menu_items.items():
+                try:
+                    if isinstance(detail, dict):
+                        deskripsi = ", ".join(detail.get('deskripsi', []))
+                        komposisi = ", ".join(detail.get('komposisi', []))
+                        harga = detail.get('harga', 0)
+                        print(f"- {nama}: Rp{harga}, Deskripsi: {deskripsi}, Komposisi: {komposisi}")
+                    else:
+                        print(f"- {nama}: Data tidak valid")
+                except Exception as e:
+                    print(f"Error menampilkan {nama}: {str(e)}")
+    return kategori_menu
 
 def autentikasi_admin():
     """Memverifikasi password admin."""
@@ -254,7 +263,24 @@ def tampilkan_reservasi():
     else:
         print("\n=== Daftar Reservasi ===")
         for meja, detail in reservations.items():
-            print(f"- {meja}: Nama: {detail['nama']}, Tanggal: {detail['tanggal']}, Waktu: {detail['waktu']}, Jumlah Orang: {detail['jumlah_orang']}, Nomor Telepon: {detail['no_telepon']}")
+            nama = detail.get('nama', 'Tidak tersedia')
+            tanggal = detail.get('tanggal', 'Tidak tersedia')
+            waktu = detail.get('waktu', 'Tidak tersedia')
+            jumlah_orang = detail.get('jumlah_orang', 'Tidak tersedia')
+            no_telepon = detail.get('no_telepon', 'Tidak tersedia')
+            pesanan = detail.get('pesanan', [])
+            print(f"- {meja}: Nama: {nama}, Tanggal: {tanggal}, Waktu: {waktu}, Jumlah Orang: {jumlah_orang}, Nomor Telepon: {no_telepon}")
+            if pesanan:
+                print("  Pesanan:")
+                for item in pesanan:
+                    nama_item = item.get('nama_item', 'Tidak tersedia')
+                    kategori = item.get('kategori', 'Tidak tersedia')
+                    jumlah = item.get('jumlah', 0)
+                    subtotal = item.get('subtotal', 0)
+                    catatan = item.get('catatan', 'Tidak ada catatan')
+                    print(f"    - {nama_item} (Kategori: {kategori}, Jumlah: {jumlah}, Subtotal: Rp{subtotal}, Catatan: {catatan})")
+            else:
+                print("  Tidak ada pesanan.")
     return reservations
 
 def hapus_reservasi(reservations):
@@ -343,9 +369,9 @@ def menu_admin():
             hapus_reservasi(reservations)
         elif pilihan == '7':
             tampilkan_orderan()
-        elif pilihan == '8':           # Tambahkan ini
+        elif pilihan == '8':           
             hapus_orderan()
-        elif pilihan == '9':           # Tambahkan ini
+        elif pilihan == '9':           
             print("Keluar dari menu admin.")
             break
         else:
