@@ -369,9 +369,9 @@ def menu_admin():
             hapus_reservasi(reservations)
         elif pilihan == '7':
             tampilkan_orderan()
-        elif pilihan == '8':
+        elif pilihan == '8':         
             hapus_orderan()
-        elif pilihan == '9':
+        elif pilihan == '9':      
             print("Keluar dari menu admin.")
             break
         else:
