@@ -1,24 +1,41 @@
 {
     "Dessert": {
-        "Cheese": {
-            "harga": 10000,
+        "Caramelo": {
+            "harga": 78000,
             "deskripsi": [
-                "keju"
+                "Moist chocolate cake filled with salted caramel cream and covered with chocolate fudge lcing"
             ],
             "komposisi": [
-                "keju",
-                "susu"
+                "caramel",
+                "cream",
+                "chocolate"
+            ]
+        }
+    },
+    "Mains": {
+        "Surf And Truf": {
+            "harga": 235000,
+            "deskripsi": [
+                "wagyu steak with shrimp chimichurri and bbq sauce"
+            ],
+            "komposisi": [
+                "wagyu",
+                "barbeque",
+                "kentang"
             ]
         },
-        "Donat": {
-            "harga": 20000,
+        "Ultimate Burger": {
+            "harga": 90000,
             "deskripsi": [
-                "enak sehat dan bergizi"
+                "our signature burger",
+                "beef patty",
+                "smoked"
             ],
             "komposisi": [
-                "tepung",
-                "margarin",
-                "gula"
+                "burger",
+                "daging",
+                "sayur",
+                "roti"
             ]
         }
     }

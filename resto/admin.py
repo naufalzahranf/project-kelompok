@@ -351,8 +351,8 @@ def menu_admin():
         print("5. Tampilkan Reservasi")
         print("6. Hapus Reservasi")
         print("7. Tampilkan Orderan")  
-        print("8. Hapus Orderan")      # Tambahkan ini
-        print("9. Keluar")             # Tambahkan ini
+        print("8. Hapus Orderan")
+        print("9. Keluar")         
         pilihan = input("Pilih menu: ")
 
         if pilihan == '1':
@@ -369,9 +369,9 @@ def menu_admin():
             hapus_reservasi(reservations)
         elif pilihan == '7':
             tampilkan_orderan()
-        elif pilihan == '8':           # Tambahkan ini
+        elif pilihan == '8':
             hapus_orderan()
-        elif pilihan == '9':           # Tambahkan ini
+        elif pilihan == '9':
             print("Keluar dari menu admin.")
             break
         else:
